@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <string>
 
-#ifdef _WIN32 || _WIN64
+#if defined _WIN32 || defined _WIN64
 /* si vous êtes sous Windows */
 //#include <pthread_VC.h>
 #include <WinSock2.h>
