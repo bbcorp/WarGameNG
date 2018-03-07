@@ -13,6 +13,11 @@ typedef enum View_Orientation
 	UP_LEFT = 7,
 } View_Orientation;
 
+typedef	struct  s_struct
+{
+	int a;
+}				t_struct;
+
 typedef enum Player_State
 {
 	IDLE = 0,

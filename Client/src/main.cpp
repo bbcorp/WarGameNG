@@ -2,9 +2,9 @@
 #include <iostream>
 #include <vector>
 #include "../include/GameEngine.h"
-#include "../include/PlayerBase.h"
-#define ASIO_STANDALONE
-#include <asio.hpp>
+#include "../include/MainPlayer.h"
+#include "../include/sprite.h"
+
 
 
 #ifdef _DEBUG
@@ -22,26 +22,20 @@ using namespace std;
 
 int main(int argc, int *argv[])
 {
-	GameEngine gameEngine;
-	PlayerBase pBase[2];
+	static engine::Game EngineGame((uint16_t) 800, (uint16_t) 600);
+	MainPlayer o_MainPlayer("bbcorp");
+	o_MainPlayer.m_name.length();
+	//o_MainPlayer.displayName2();
+	//Player Players[2];
+	//Players[0].displayName;
+	/*NetworkEngine networkEngine;
 	pBase[0].receiveDamage(10);
 	pBase[0].receiveDamage(10);
 	pBase[0].displayName();
 	pBase[1].receiveDamage(10);
 	pBase[1].receiveDamage(10);
-	pBase[1].receiveDamage(10);
-	gameEngine.sfmlInit();
-	gameEngine.sfmlRender();
-	asio::io_service io_service;
-	asio::ip::udp::resolver resolver(io_service);
-	asio::ip::udp::resolver::query query(asio::ip::udp::v4(), "127.0.0.1", "daytime");
-	asio::ip::udp::endpoint receiver_endpoint = *resolver.resolve(query);
-	asio::ip::udp::socket socket(io_service);
-	socket.open(asio::ip::udp::v4());
-	vector<char> send_buffer(1);
-	send_buffer[0] = { 0 };
-	socket.send_to(asio::buffer(send_buffer), receiver_endpoint);
-
+	pBase[1].receiveDamage(10);*/
+	EngineGame.sfmlRender();
 
 
 	return EXIT_SUCCESS;

@@ -4,24 +4,27 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 
-
-class GameEngine
+namespace engine
 {
-public:
-	void sfmlInit(void);
-	bool sfmlCleanup(void);
-	void sfmlRender(void);
+	class Game
+	{
+	public:
+		Game(uint16_t width, uint16_t height);
+		void sfmlInit(void);
+		bool sfmlCleanup(void);
+		void sfmlRender(void);
 
-private:
-	 void sfmlCreateWindow(void);
-	 void sfmlDisplaySprites(void);
-	 void sfmlLoadTexture(std::string fileName);
-	 void sfmlDestroyTextures(void);
+	private:
+		void sfmlCreateWindow(void);
+		void sfmlDisplaySprites(void);
+		void sfmlLoadTexture(std::string fileName);
+		void sfmlLoadAllTextures(void);
+		void sfmlDestroyTextures(void);
 
-	sf::RenderWindow *window;
-	uint16_t width;
-	uint16_t height;
-	std::vector<sf::Sprite> spriteQueue;
-
-};
+		sf::RenderWindow *m_window;
+		uint16_t m_width;
+		uint16_t m_height;
+		std::vector<sf::Sprite> m_spriteQueue;
+	};
+}
 #endif

@@ -1,20 +1,17 @@
 #ifndef PLAYERBASE_H
 #define PLAYERBASE_H
-//#include <SDL_config.h>
-//#include <SDL_rect.h>
+#include <SFML/Graphics/Rect.hpp>
 #include <string>
-#include "Player.h"
 
-class PlayerBase : public Player
+class PlayerBase
 {
 public:
 	PlayerBase(void);
-	PlayerBase(std::string nom);
+	PlayerBase(std::string name);
 	void receiveDamage(uint16_t damage);
-	void displayName2(void);
-private:
-	int16_t m_id;
 	std::string m_name;
+protected:
+	int16_t m_id;
 	uint16_t m_health;
 	uint16_t m_ammo;
 	uint16_t m_state;

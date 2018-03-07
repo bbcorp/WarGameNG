@@ -5,51 +5,60 @@
 
 using namespace std;
 
-void GameEngine::sfmlInit(void)
+engine::Game::Game(uint16_t width, uint16_t height) : m_width(width), m_height(height), m_window(NULL)
+{
+	sfmlInit();
+}
+
+void engine::Game::sfmlInit(void)
 {
 	sfmlCreateWindow();
 }
 
-bool GameEngine::sfmlCleanup(void)
+bool engine::Game::sfmlCleanup(void)
 {
 	sfmlDestroyTextures();
-	delete window;
-	window = NULL;
+	delete m_window;
+	m_window = NULL;
 	return true;
 }
 
-void GameEngine::sfmlCreateWindow(void)
+void engine::Game::sfmlCreateWindow(void)
 {
-	width = 800;
-	height = 600;
-	window = new sf::RenderWindow(sf::VideoMode(800, 600), "WarGame");
-	window->setVerticalSyncEnabled(true);
+	m_window = new sf::RenderWindow(sf::VideoMode(m_width, m_height), "WarGame");
+	m_window->setVerticalSyncEnabled(true);
 }
 
-void GameEngine::sfmlRender(void)
+void engine::Game::sfmlRender(void)
 {
-	sfmlLoadTexture("../res/background_dev.png");
-	while (window->isOpen())
+	sfmlLoadAllTextures();
+	while (m_window->isOpen())
 	{
 		sf::Event event;
-		while (window->pollEvent(event))
+		while (m_window->pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
-				window->close();
+				m_window->close();
 		}
-		window->clear();
+		m_window->clear();
 		sfmlDisplaySprites();
-		window->display();
+		m_window->display();
 	}
 	sfmlCleanup();
 }
-void GameEngine::sfmlDisplaySprites(void)
+void engine::Game::sfmlDisplaySprites(void)
 {
-	for (uint16_t i = 0; i < spriteQueue.size(); i++)
-		window->draw(spriteQueue[i]);
+	for (uint16_t i = 0; i < m_spriteQueue.size(); i++)
+		m_window->draw(m_spriteQueue[i]);
+}
+void engine::Game::sfmlLoadAllTextures(void)
+{
+	// LOAD HERE all textures needed
+	sfmlLoadTexture("../res/background_deve.png");
+	sfmlLoadTexture("../res/blood.png");
 }
 
-void GameEngine::sfmlLoadTexture(string fileName)
+void engine::Game::sfmlLoadTexture(string fileName)
 {
 	sf::Texture *texture = new sf::Texture;
 	try {
@@ -62,15 +71,16 @@ void GameEngine::sfmlLoadTexture(string fileName)
 	{
 		cerr << exception << endl;
 		sf::err();
+		return;
 	}
 	texture->setSmooth(true);
 	sf::Sprite sprite;
 	sprite.setTexture(*texture);
-	spriteQueue.push_back(sprite);
+	m_spriteQueue.push_back(sprite);
 }
 
-void GameEngine::sfmlDestroyTextures(void)
+void engine::Game::sfmlDestroyTextures(void)
 {
-	for (uint16_t i = 0; i < spriteQueue.size(); i++)
-		delete spriteQueue[i].getTexture();
+	for (uint16_t i = 0; i < m_spriteQueue.size(); i++)
+		delete m_spriteQueue[i].getTexture();
 }
