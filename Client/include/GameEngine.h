@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <SFML/Graphics.hpp>
+#include "../include/MainPlayer.h"
 
 namespace engine
 {
@@ -18,13 +19,15 @@ namespace engine
 		void sfmlCreateWindow(void);
 		void sfmlDisplaySprites(void);
 		void sfmlLoadTexture(std::string fileName);
+		void sfmlLoadPlayerTexture(std::string fileName);
 		void sfmlLoadAllTextures(void);
 		void sfmlDestroyTextures(void);
 
 		sf::RenderWindow *m_window;
 		uint16_t m_width;
 		uint16_t m_height;
-		std::vector<sf::Sprite> m_spriteQueue;
+		std::vector<sf::Sprite*> m_spriteQueue;
+		MainPlayer m_MainPlayer;
 	};
 }
 #endif

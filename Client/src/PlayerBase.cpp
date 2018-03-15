@@ -1,17 +1,16 @@
 #include "../include/PlayerBase.h"
 #include <stdlib.h>
 #include <iostream>
-#include "pch.h"
 
 using namespace std;
 
 
-PlayerBase::PlayerBase() : m_id(-1), m_health((uint16_t)100), m_ammo((uint16_t)30), m_state((uint16_t)0), m_orientation((uint16_t)0), m_pos({ 0, 0, 32, 32 })
+PlayerBase::PlayerBase() : m_id(-1), m_health((uint16_t)100), m_ammo((uint16_t)30), m_state((uint16_t)0), m_orientation((uint16_t)0), m_pos(sf::Vector2u(384, 284))
 {
 
 }
 
-PlayerBase::PlayerBase(string name) : m_name(name), m_id(-1), m_health((uint16_t)100), m_ammo((uint16_t)30), m_state((uint16_t)0), m_orientation((uint16_t)0), m_pos({ 0, 0, 32, 32 })
+PlayerBase::PlayerBase(string name) : m_name(name), m_id(-1), m_health((uint16_t)100), m_ammo((uint16_t)30), m_state((uint16_t)0), m_orientation((uint16_t)0), m_pos(384, 284)
 {
 
 }

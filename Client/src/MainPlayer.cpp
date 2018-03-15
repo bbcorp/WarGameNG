@@ -1,10 +1,29 @@
 #include "../include/MainPlayer.h"
-#include "pch.h"
 #include <stdlib.h>
 #include <iostream>
+#include "../include/ft_Delay.h"
+#include "../include/sprite.h"
+
 using namespace std;
 
-MainPlayer::MainPlayer(string name) : PlayerBase(name), m_relativePos(m_pos)/*, m_relativePos({ 0, 0, 32, 32 })*/, m_lastAnim(0), m_sprite({ 0, 0, 32, 32 }), m_walkAnimationStep(0), m_deathAnimationStep(0)
+MainPlayer::MainPlayer() : PlayerBase(), m_lastAnim(0), m_walkAnimationStep(0), m_deathAnimationStep(0)
 {
+	m_sprite.setTextureRect({ 1, 1, 32, 32 });
+	m_sprite.setPosition({ 384.0, 284.0 });
+}
 
+MainPlayer::MainPlayer(string name) : PlayerBase(name), m_lastAnim(0),  m_walkAnimationStep(0), m_deathAnimationStep(0)
+{
+	m_sprite.setTextureRect({ 1, 1, 32, 32 });
+	m_sprite.setPosition({ 384.0, 284.0 });
+}
+
+void MainPlayer::updateOrientation(void)
+{
+	if (m_state == WALK)
+	{
+		sf::Clock clock;
+		engine::ft_Delay(&clock, sf::milliseconds(150));
+	}
+	m_sprite.setTextureRect({ 1, m_orientation * 32 + m_orientation * 1 + 1, 32, 32 });
 }
