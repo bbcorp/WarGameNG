@@ -11,6 +11,7 @@ public:
 	MainPlayer(void);
 	MainPlayer(std::string name);
 	void updateOrientation(void);
+	void move(int16_t x, int16_t y);
 
 	sf::Sprite m_sprite;
 private:

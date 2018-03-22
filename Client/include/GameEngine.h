@@ -14,6 +14,7 @@ namespace engine
 		void sfmlInit(void);
 		bool sfmlCleanup(void);
 		void sfmlRender(void);
+		MainPlayer m_MainPlayer;
 
 	private:
 		void sfmlCreateWindow(void);
@@ -27,7 +28,6 @@ namespace engine
 		uint16_t m_width;
 		uint16_t m_height;
 		std::vector<sf::Sprite*> m_spriteQueue;
-		MainPlayer m_MainPlayer;
 	};
 }
 #endif

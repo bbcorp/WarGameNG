@@ -27,3 +27,10 @@ void MainPlayer::updateOrientation(void)
 	}
 	m_sprite.setTextureRect({ 1, m_orientation * 32 + m_orientation * 1 + 1, 32, 32 });
 }
+
+void MainPlayer::move(int16_t x, int16_t y)
+{
+	m_sprite.move(x, y);
+	m_pos.x = +x;
+	m_pos.y = +y;
+}

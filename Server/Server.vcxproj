@@ -19,7 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Client\src\protobuf_test.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\NetworkEngine.cpp" />
+    <ClCompile Include="src\PlayerBase.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Client\include\protobuf_test.h" />
+    <ClInclude Include="..\Client\include\wargame_generated.h" />
+    <ClInclude Include="include\NetworkEngine.h" />
+    <ClInclude Include="include\PlayerBase.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

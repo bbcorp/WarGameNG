@@ -27,7 +27,6 @@
     <ClCompile Include="src\MainPlayer.cpp" />
     <ClCompile Include="src\PlayerBase.cpp" />
     <ClCompile Include="src\protobuf_test.cpp" />
-    <ClCompile Include="src\test.pb.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AudioEngine.h" />
@@ -39,7 +38,7 @@
     <ClInclude Include="include\PlayerBase.h" />
     <ClInclude Include="include\protobuf_test.h" />
     <ClInclude Include="include\sprite.h" />
-    <ClInclude Include="include\test.pb.h" />
+    <ClInclude Include="include\wargame_generated.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
