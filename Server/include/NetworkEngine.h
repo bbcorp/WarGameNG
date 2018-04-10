@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <asio.hpp>
+#include <SFML/System/Clock.hpp>
 #include "../include/PlayerBase.h"
 
 #define PORT 1977
@@ -17,14 +18,19 @@ namespace engine
 		Network();
 		virtual ~Network();
 		void receiveLoop(void);
-		bool decodeFlatBuf(std::string *buffer, size_t receiveLength);
 
 	private:
+		bool decodeFlatBuf(size_t receiveLength);
+		bool storePlayer(PlayerBase *Player);
+		size_t sendPlayerToAllClients(PlayerBase *Player);
+		size_t sendPlayersToClient(asio::ip::udp::endpoint *endpoint);
+
 		asio::ip::udp::endpoint m_sender_enpoint;
 		asio::io_service m_io_service;
 		asio::ip::udp::socket *m_socket;
 		std::vector<PlayerBase> m_Players;
-		char buffer[MAX_BUFFER];
+		
+		uint8_t m_buffer[MAX_BUFFER];
 	};
 }
 #endif

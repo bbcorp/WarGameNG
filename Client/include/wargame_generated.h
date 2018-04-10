@@ -13,6 +13,10 @@ struct s_vector2u;
 
 struct playerBase;
 
+struct players;
+
+struct requestId;
+
 MANUALLY_ALIGNED_STRUCT(8) s_vector2u FLATBUFFERS_FINAL_CLASS {
  private:
   uint64_t x_;
@@ -156,19 +160,187 @@ inline flatbuffers::Offset<playerBase> CreateplayerBaseDirect(
       pos);
 }
 
+struct players FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_VECPLAYERS = 4
+  };
+  const flatbuffers::Vector<flatbuffers::Offset<playerBase>> *vecPlayers() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<playerBase>> *>(VT_VECPLAYERS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_VECPLAYERS) &&
+           verifier.Verify(vecPlayers()) &&
+           verifier.VerifyVectorOfTables(vecPlayers()) &&
+           verifier.EndTable();
+  }
+};
+
+struct playersBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_vecPlayers(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<playerBase>>> vecPlayers) {
+    fbb_.AddOffset(players::VT_VECPLAYERS, vecPlayers);
+  }
+  explicit playersBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  playersBuilder &operator=(const playersBuilder &);
+  flatbuffers::Offset<players> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<players>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<players> Createplayers(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<playerBase>>> vecPlayers = 0) {
+  playersBuilder builder_(_fbb);
+  builder_.add_vecPlayers(vecPlayers);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<players> CreateplayersDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<flatbuffers::Offset<playerBase>> *vecPlayers = nullptr) {
+  return WarGame::fb::Createplayers(
+      _fbb,
+      vecPlayers ? _fbb.CreateVector<flatbuffers::Offset<playerBase>>(*vecPlayers) : 0);
+}
+
+struct requestId FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_NEWID = 4,
+    VT_NAME = 6
+  };
+  int16_t newid() const {
+    return GetField<int16_t>(VT_NEWID, 0);
+  }
+  const flatbuffers::String *name() const {
+    return GetPointer<const flatbuffers::String *>(VT_NAME);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<int16_t>(verifier, VT_NEWID) &&
+           VerifyOffset(verifier, VT_NAME) &&
+           verifier.Verify(name()) &&
+           verifier.EndTable();
+  }
+};
+
+struct requestIdBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_newid(int16_t newid) {
+    fbb_.AddElement<int16_t>(requestId::VT_NEWID, newid, 0);
+  }
+  void add_name(flatbuffers::Offset<flatbuffers::String> name) {
+    fbb_.AddOffset(requestId::VT_NAME, name);
+  }
+  explicit requestIdBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  requestIdBuilder &operator=(const requestIdBuilder &);
+  flatbuffers::Offset<requestId> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<requestId>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<requestId> CreaterequestId(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    int16_t newid = 0,
+    flatbuffers::Offset<flatbuffers::String> name = 0) {
+  requestIdBuilder builder_(_fbb);
+  builder_.add_name(name);
+  builder_.add_newid(newid);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<requestId> CreaterequestIdDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    int16_t newid = 0,
+    const char *name = nullptr) {
+  return WarGame::fb::CreaterequestId(
+      _fbb,
+      newid,
+      name ? _fbb.CreateString(name) : 0);
+}
+
 inline const WarGame::fb::playerBase *GetplayerBase(const void *buf) {
   return flatbuffers::GetRoot<WarGame::fb::playerBase>(buf);
 }
 
+inline const WarGame::fb::players *Getplayers(const void *buf) {
+  return flatbuffers::GetRoot<WarGame::fb::players>(buf);
+}
+
+inline const WarGame::fb::requestId *GetrequestId(const void *buf) {
+  return flatbuffers::GetRoot<WarGame::fb::requestId>(buf);
+}
+
+inline const char *playerBaseIdentifier() {
+  return "PLAY";
+}
+
+inline const char *playersIdentifier() {
+  return "VPLA";
+}
+
+inline const char *requestIdIdentifier() {
+  return "RQID";
+}
+
+inline bool playerBaseBufferHasIdentifier(const void *buf) {
+  return flatbuffers::BufferHasIdentifier(
+      buf, playerBaseIdentifier());
+}
+
+inline bool playersBufferHasIdentifier(const void *buf) {
+  return flatbuffers::BufferHasIdentifier(
+      buf, playersIdentifier());
+}
+
+inline bool requestIdBufferHasIdentifier(const void *buf) {
+  return flatbuffers::BufferHasIdentifier(
+      buf, requestIdIdentifier());
+}
+
 inline bool VerifyplayerBaseBuffer(
     flatbuffers::Verifier &verifier) {
-  return verifier.VerifyBuffer<WarGame::fb::playerBase>(nullptr);
+  return verifier.VerifyBuffer<WarGame::fb::playerBase>(playerBaseIdentifier());
+}
+
+inline bool VerifyplayersBuffer(
+    flatbuffers::Verifier &verifier) {
+  return verifier.VerifyBuffer<WarGame::fb::players>(playersIdentifier());
+}
+
+inline bool VerifyrequestIdBuffer(
+    flatbuffers::Verifier &verifier) {
+  return verifier.VerifyBuffer<WarGame::fb::requestId>(requestIdIdentifier());
 }
 
 inline void FinishplayerBaseBuffer(
     flatbuffers::FlatBufferBuilder &fbb,
     flatbuffers::Offset<WarGame::fb::playerBase> root) {
-  fbb.Finish(root);
+  fbb.Finish(root, playerBaseIdentifier());
+}
+
+inline void FinishplayersBuffer(
+    flatbuffers::FlatBufferBuilder &fbb,
+    flatbuffers::Offset<WarGame::fb::players> root) {
+  fbb.Finish(root, playersIdentifier());
+}
+
+inline void FinishrequestIdBuffer(
+    flatbuffers::FlatBufferBuilder &fbb,
+    flatbuffers::Offset<WarGame::fb::requestId> root) {
+  fbb.Finish(root, requestIdIdentifier());
 }
 
 }  // namespace fb

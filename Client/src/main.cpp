@@ -1,13 +1,26 @@
+/*
+* WarGame - small 2D game for studies
+* Copyright (C) 2018  Bertrand Caplet <bbcorp@chunkz.net>
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <https://www.gnu.org/licenses/>. */
+
 #include <stdlib.h>
 #include <iostream>
 #include <vector>
 #include "../include/GameEngine.h"
 #include "../include/NetworkEngine.h"
-#include "../include/MainPlayer.h"
-#include "../include/sprite.h"
-#include "../include/protobuf_test.h"
-
-
+#include "../include/Map.h";
 
 #ifdef _DEBUG
 #pragma comment(lib,"sfml-graphics-d.lib")
@@ -26,13 +39,13 @@ int main(int argc, int *argv[])
 {
 	static engine::Game EngineGame((uint16_t) 800, (uint16_t) 600);
 	static engine::Network EngineNetwork("127.0.0.1", &EngineGame);
+	static engine::Map o_Map("../res/layer_map.bmp");
 	
 	/*if (typeid(a).hash_code() == typeid(MainPlayer).hash_code())
 	{
 		 It's a MainPlayer class/Object
 		bool mainplayer = true;
 	}*/
-
 	EngineGame.sfmlRender();
 
 

@@ -24,13 +24,14 @@ public:
 	PlayerBase(const WarGame::fb::playerBase *pBase);
 	bool operator==(PlayerBase const& Playerb);
 	bool operator!=(PlayerBase const& Playerb);
-
 	void receiveDamage(uint16_t damage);
+	flatbuffers::Offset<WarGame::fb::playerBase> returnStructFbPlayerbase(flatbuffers::FlatBufferBuilder *builder);
+
 	std::string encodeFlatBuf(void);
 	std::string m_name;
 	asio::ip::udp::endpoint m_sender_enpoint;
-protected:
 	int16_t m_id;
+protected:
 	uint16_t m_health;
 	uint16_t m_ammo;
 	sf::Vector2u m_pos;

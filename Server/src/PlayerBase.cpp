@@ -1,6 +1,24 @@
+/*
+* WarGame - small 2D game for studies
+* Copyright (C) 2018  Bertrand Caplet <bbcorp@chunkz.net>
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <https://www.gnu.org/licenses/>. */
+
 #include "../include/PlayerBase.h"
 #include <stdlib.h>
 #include <iostream>
+#include <SFML/System/Clock.hpp>
 
 using namespace std;
 
@@ -51,11 +69,17 @@ void PlayerBase::receiveDamage(uint16_t damage)
 
 using namespace WarGame::fb;
 
+flatbuffers::Offset<WarGame::fb::playerBase> PlayerBase::returnStructFbPlayerbase(flatbuffers::FlatBufferBuilder *builder)
+{
+	flatbuffers::Offset<WarGame::fb::playerBase> pBase = CreateplayerBaseDirect(*builder, m_name.data(), m_id, m_health, m_ammo, m_orientation, m_state, &s_vector2u(m_pos.x, m_pos.y));
+	return pBase;
+}
+
 string PlayerBase::encodeFlatBuf(void)
 {
 	flatbuffers::FlatBufferBuilder builder;
 	auto pBase = CreateplayerBaseDirect(builder, m_name.data(), m_id, m_health, m_ammo, m_orientation, m_state, &s_vector2u(m_pos.x, m_pos.y));
-	builder.Finish(pBase);
+	FinishplayerBaseBuffer(builder, pBase);
 	std::string buffer((char *)builder.GetBufferPointer(), (char *)builder.GetBufferPointer() + builder.GetSize());
 	builder.ReleaseBufferPointer();
 	return buffer;

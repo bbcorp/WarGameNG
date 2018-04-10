@@ -1,5 +1,6 @@
 #ifndef PLAYERBASE_H
 #define PLAYERBASE_H
+#include "../include/wargame_generated.h"
 #include <SFML/Graphics/Rect.hpp>
 #include <string>
 
@@ -19,16 +20,23 @@ class PlayerBase
 public:
 	PlayerBase(void);
 	PlayerBase(std::string name);
+	PlayerBase(const WarGame::fb::playerBase *pBase);
 	bool PlayerBase::operator==(PlayerBase const& Playerb);
 	bool PlayerBase::operator!=(PlayerBase const& Playerb);
 	void receiveDamage(uint16_t damage);
-	std::string encodeFlatBuf(void);
+	std::string encodeFlatBuf(void) const;
+	std::string requestId(void) const;
+	uint16_t getHealth(void) const;
+	uint16_t getAmmo(void) const;
+
 	std::string m_name;
 	uint16_t m_orientation;
 	uint16_t m_state;
 	sf::Vector2u m_pos;
-protected:
 	int16_t m_id;
+
+
+protected:
 	uint16_t m_health;
 	uint16_t m_ammo;
 };
