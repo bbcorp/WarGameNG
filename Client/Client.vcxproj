@@ -23,9 +23,10 @@
     <ClCompile Include="src\ft_Delay.cpp" />
     <ClCompile Include="src\GameEngine.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\MainPlayer.cpp" />
     <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\NetworkEngine.cpp" />
-    <ClCompile Include="src\MainPlayer.cpp" />
+    <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\PlayerBase.cpp" />
     <ClCompile Include="src\protobuf_test.cpp" />
   </ItemGroup>
@@ -34,9 +35,10 @@
     <ClInclude Include="include\Event.h" />
     <ClInclude Include="include\ft_Delay.h" />
     <ClInclude Include="include\GameEngine.h" />
+    <ClInclude Include="include\MainPlayer.h" />
     <ClInclude Include="include\Map.h" />
     <ClInclude Include="include\NetworkEngine.h" />
-    <ClInclude Include="include\MainPlayer.h" />
+    <ClInclude Include="include\Player.h" />
     <ClInclude Include="include\PlayerBase.h" />
     <ClInclude Include="include\protobuf_test.h" />
     <ClInclude Include="include\sprite.h" />

@@ -1,6 +1,7 @@
 #ifndef NETWORK_ENGINE_H
 #define NETWORK_ENGINE_H
-#include "../include/GameEngine.h"
+#include "GameEngine.h"
+#include "Player.h"
 #include <errno.h>
 #include <string>
 #include <thread>

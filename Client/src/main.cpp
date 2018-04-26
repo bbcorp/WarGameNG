@@ -20,7 +20,6 @@
 #include <vector>
 #include "../include/GameEngine.h"
 #include "../include/NetworkEngine.h"
-#include "../include/Map.h";
 
 #ifdef _DEBUG
 #pragma comment(lib,"sfml-graphics-d.lib")
@@ -39,13 +38,7 @@ int main(int argc, int *argv[])
 {
 	static engine::Game EngineGame((uint16_t) 800, (uint16_t) 600);
 	static engine::Network EngineNetwork("127.0.0.1", &EngineGame);
-	static engine::Map o_Map("../res/layer_map.bmp");
-	
-	/*if (typeid(a).hash_code() == typeid(MainPlayer).hash_code())
-	{
-		 It's a MainPlayer class/Object
-		bool mainplayer = true;
-	}*/
+
 	EngineGame.sfmlRender();
 
 

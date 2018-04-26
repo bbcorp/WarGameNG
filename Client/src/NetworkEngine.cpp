@@ -59,7 +59,7 @@ size_t engine::Network::sendData(std::string *send_buffer)
 
 void engine::Network::streamMainPlayerData(engine::Game *GameEngine)
 {
-	PlayerBase lastMainPlayer;
+	MainPlayer lastMainPlayer;
 	sf::Clock clockPlayerData;
 
 	string send_buffer;
@@ -67,7 +67,7 @@ void engine::Network::streamMainPlayerData(engine::Game *GameEngine)
 
 	while (true)
 	{
-		if (GameEngine->m_MainPlayer != lastMainPlayer && engine::ft_Delay(&clockPlayerData, sf::milliseconds(8)))
+		if (GameEngine->m_MainPlayer != lastMainPlayer && engine::ft_Delay(&clockPlayerData, sf::milliseconds(14)))
 		{
 				send_buffer = GameEngine->m_MainPlayer.encodeFlatBuf();
 				size_t sendLength = sendData(&send_buffer);
@@ -174,50 +174,50 @@ bool engine::Network::decodeFlatBuf(size_t receiveLength, engine::Game *GameEngi
 	{
 		bool found(false);
 		auto pBase = flatbuffers::GetRoot<playerBase>(m_receive_buffer);
-		MainPlayer *o_tempPlayer = new MainPlayer(pBase);
-		for (uint16_t i = 0; i < GameEngine->m_ennemiesPlayers.size(); i++)
+		Player o_tempPlayer(pBase);
+		for (uint16_t i = 0; i < GameEngine->m_MainPlayer.m_ennemiesPlayers.size(); i++)
 		{
-			if (o_tempPlayer->m_name == GameEngine->m_ennemiesPlayers.at(i)->m_name && o_tempPlayer->m_id == GameEngine->m_ennemiesPlayers.at(i)->m_id) // Player already exists
+			if (o_tempPlayer.m_name == GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).m_name && o_tempPlayer.m_id == GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).m_id) // Player already exists
 			{
-				if (*GameEngine->m_ennemiesPlayers.at(i) == *o_tempPlayer)
+				if (GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i) == o_tempPlayer)
 				{
 					found = true;
-					delete o_tempPlayer; // Delete, no need
 					break; // Data is the same, no need to store
 				}
 				else
 				{
 					found = true;
-					GameEngine->m_ennemiesPlayers.at(i)->applyModificationFromNetwork(o_tempPlayer); // Data has changed so store it !
-					delete o_tempPlayer; // Delete, we do need it anymore.
+					GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).applyModificationFromNetwork(&o_tempPlayer); // Data has changed so store it !
+					GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).updateState();
 					break; // No need to go further we found it.
 				}
 			}
 		}
 		if (!found) // We didn't find it locally !
 		{
-			GameEngine->m_ennemiesPlayers.push_back(o_tempPlayer); // So, store it !
+			o_tempPlayer.updateState();
+			GameEngine->m_MainPlayer.m_ennemiesPlayers.push_back(o_tempPlayer); // So, store it !
 			GameEngine->m_ennemiesCount++;
 			return true;
 		}
 	}
 	else if (VerifyplayersBuffer(verifier))
 	{
-
 		auto fbPlayers = flatbuffers::GetRoot<players>(m_receive_buffer);
 		// Store new ones
-		if (GameEngine->m_ennemiesPlayers.size() == 0) // There's no player
+		if (GameEngine->m_MainPlayer.m_ennemiesPlayers.size() == 0) // There's no player
 		{
 			for (uint16_t i = 0; i < fbPlayers->vecPlayers()->size(); i++)
 			{
-				MainPlayer *o_tempPlayer = new MainPlayer(fbPlayers->vecPlayers()->Get(i));
-				GameEngine->m_ennemiesPlayers.push_back(o_tempPlayer);
-				GameEngine->addSpriteToQueue(&o_tempPlayer->m_sprite);
+				Player o_tempPlayer(fbPlayers->vecPlayers()->Get(i));
+				o_tempPlayer.updateState();
+				GameEngine->m_MainPlayer.m_ennemiesPlayers.push_back(o_tempPlayer);
+				GameEngine->addSpriteToQueue(&GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).m_sprite);
 				GameEngine->m_ennemiesCount++;
 			}
 			return true;
 		}
-		else
+		else if (GameEngine->m_MainPlayer.m_ennemiesPlayers.size() > 0)
 		{
 			bool found(false);
 			uint16_t i;
@@ -225,36 +225,30 @@ bool engine::Network::decodeFlatBuf(size_t receiveLength, engine::Game *GameEngi
 			for (i = 0; i < fbPlayers->vecPlayers()->size(); i++)
 			{
 				found = false;
-				MainPlayer *o_tempPlayer = new MainPlayer(fbPlayers->vecPlayers()->Get(i));
-				for (j = 0; j < GameEngine->m_ennemiesPlayers.size(); j++)
+				Player o_tempPlayer(fbPlayers->vecPlayers()->Get(i));
+				for (j = 0; j < GameEngine->m_MainPlayer.m_ennemiesPlayers.size(); j++)
 				{
-					if (o_tempPlayer->m_name == GameEngine->m_ennemiesPlayers.at(j)->m_name && o_tempPlayer->m_id == GameEngine->m_ennemiesPlayers.at(j)->m_id) // Player already exists
+					if (o_tempPlayer.m_name == GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j).m_name && o_tempPlayer.m_id == GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j).m_id) // Player already exists
 					{
-						if (*GameEngine->m_ennemiesPlayers.at(j) == *o_tempPlayer)
+						if (GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j) == o_tempPlayer)
 						{
 							found = true;
-							delete o_tempPlayer;
 							break; // Data is the same, no need to store
 						}
 						else
 						{
 							found = true;
-							GameEngine->m_ennemiesPlayers.at(j)->applyModificationFromNetwork(o_tempPlayer); // Data has changed so store it !
-							delete o_tempPlayer;
+							GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j).applyModificationFromNetwork(&o_tempPlayer); // Data has changed so store it !
+							GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j).updateState();
 							break; // No need to go further we found it.
 						}
-						//GameEngine->deleteSpriteFromQueue(&GameEngine->m_ennemiesPlayers.at(j)->m_sprite);
-						//MainPlayer *o_oldPlayerToDelete = GameEngine->m_ennemiesPlayers.at(j);
-						
-						//GameEngine->addSpriteToQueue(&o_tempPlayer->m_sprite);
-						//delete o_oldPlayerToDelete;
 					}
 				}
-				if (!found && GameEngine->m_ennemiesPlayers.size() > 0) // We didn't find it locally !
+				if (!found) // We didn't find it locally !
 				{
-					GameEngine->m_ennemiesPlayers.push_back(o_tempPlayer); // So, store it !
+					o_tempPlayer.updateState();
+					GameEngine->m_MainPlayer.m_ennemiesPlayers.push_back(o_tempPlayer); // So, store it !
 					GameEngine->m_ennemiesCount++;
-					return true;
 				}
 			}
 		}

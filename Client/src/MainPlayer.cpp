@@ -1,30 +1,8 @@
-/*
-* WarGame - small 2D game for studies
-* Copyright (C) 2018  Bertrand Caplet <bbcorp@chunkz.net>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <https://www.gnu.org/licenses/>. */
-
 #include "../include/MainPlayer.h"
-#include <stdlib.h>
-#include <iostream>
-#include <SFML/Graphics.hpp>
-#include "../include/ft_Delay.h"
-#include "../include/sprite.h"
 
 using namespace std;
 
-MainPlayer::MainPlayer() : PlayerBase(), m_lastAnim(0), m_walkAnimationStep(0), m_deathAnimationStep(0), m_PlayerViewRect(400, 500, 800, 600)
+MainPlayer::MainPlayer() : Player(), m_PlayerViewRect(400, 500, 800, 600)
 {
 	m_sprite.setTextureRect({ 1, 1, 32, 32 });
 	m_sprite.setPosition({ (float)m_pos.x, (float)m_pos.y });
@@ -38,11 +16,9 @@ MainPlayer::MainPlayer() : PlayerBase(), m_lastAnim(0), m_walkAnimationStep(0), 
 	m_wallRects.push_back(wallUp);
 	m_wallRects.push_back(wallRight);
 	m_wallRects.push_back(wallDown);
-	m_clockUpdate = new sf::Clock;
-	m_ennemy_texture = NULL;
 }
 
-MainPlayer::MainPlayer(string name) : PlayerBase(name), m_lastAnim(0),  m_walkAnimationStep(0), m_deathAnimationStep(0)
+MainPlayer::MainPlayer(string name) : Player(name), m_PlayerViewRect(400, 500, 800, 600)
 {
 	m_sprite.setTextureRect({ 1, 1, 32, 32 });
 	m_sprite.setPosition({ (float)m_pos.x, (float)m_pos.y });
@@ -56,72 +32,38 @@ MainPlayer::MainPlayer(string name) : PlayerBase(name), m_lastAnim(0),  m_walkAn
 	m_wallRects.push_back(wallUp);
 	m_wallRects.push_back(wallRight);
 	m_wallRects.push_back(wallDown);
-	m_clockUpdate = new sf::Clock;
-	m_ennemy_texture = NULL;
-}
-
-MainPlayer::~MainPlayer()
-{
-	if (m_ennemy_texture != NULL)
-		delete m_ennemy_texture;
-/*	delete m_clockUpdate; /!\ FIX ME /!\ */
-}
-
-MainPlayer::MainPlayer(const WarGame::fb::playerBase *pBase) : PlayerBase(pBase), m_lastAnim(0), m_walkAnimationStep(0), m_deathAnimationStep(0)
-{	
-	m_ennemy_texture = new sf::Texture;
-	try {
-		if (!m_ennemy_texture->loadFromFile("../res/ennemy.png"))
-			throw string("Can't load ../res/ennemy.png");
-	}
-	catch (string const& exception)
-	{
-		cerr << exception << endl;
-		sf::err();
-		return;
-	}
-	m_ennemy_texture->setSmooth(true);
-	m_sprite.setTexture(*m_ennemy_texture);
-
-	m_sprite.setTextureRect({ 1, 1, 32, 32 });
-	m_sprite.setPosition({ (float)m_pos.x, (float)m_pos.y });
-	m_clockUpdate = new sf::Clock;
-}
-
-
-void MainPlayer::updateState(void)
-{
-	if (engine::ft_Delay(m_clockUpdate, sf::milliseconds(150)))
-	{
-		if (m_state == WALK)
-		{
-			if (m_walkAnimationStep < 3)
-				m_walkAnimationStep++;
-			else
-				m_walkAnimationStep = 1;
-			m_sprite.setTextureRect({ m_walkAnimationStep * 32 + m_walkAnimationStep + 1, m_orientation * 32 + m_orientation + 1, 32, 32 });
-		}
-		else
-			m_sprite.setTextureRect({ 1, m_orientation * 32 + m_orientation + 1, 32, 32 });
-	}
-}
-
-void MainPlayer::applyModificationFromNetwork(MainPlayer *o_player)
-{
-	m_sprite.setPosition(o_player->m_sprite.getPosition());
-	m_pos = o_player->m_pos;
-	m_orientation = o_player->m_orientation;
-	m_state = o_player->m_state;
-	m_health = o_player->getHealth();
-	m_ammo = o_player->getAmmo();
 }
 
 void MainPlayer::move(int16_t x, int16_t y)
 {
+	if (checkWallsCollision(x, y) || checkPlayersCollision(x, y))
+		return;
 	m_sprite.move(x, y);
 	nearWallMode(x, y);
 	m_pos.x += x;
 	m_pos.y += y;
+}
+
+bool MainPlayer::checkWallsCollision(int16_t x, int16_t y)
+{
+	std::vector<sf::FloatRect> walls(engine::Map::getWalls());
+	for (uint16_t i = 0; i < walls.size(); i++)
+	{
+		if (walls.at(i).intersects(sf::FloatRect(m_pos.x + x, m_pos.y + y, 30, 30)))
+			return true;
+	}
+	return false;
+}
+
+bool MainPlayer::checkPlayersCollision(int16_t x, int16_t y)
+{
+	for (uint16_t i = 0; i < m_ennemiesPlayers.size(); i++)
+	{
+		sf::FloatRect ennemyRect(m_ennemiesPlayers.at(i).m_pos.x, m_ennemiesPlayers.at(i).m_pos.y, 30, 30);
+		if (ennemyRect.intersects(sf::FloatRect(m_pos.x + x, m_pos.y + y, 30, 30)))
+			return true;
+	}
+	return false;
 }
 
 void MainPlayer::nearWallMode(int16_t x, int16_t y)

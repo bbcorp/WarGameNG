@@ -23,10 +23,13 @@
 
 using namespace std;
 
+sf::Texture *engine::Game::m_ennemy_texture(NULL);
+
 engine::Game::Game(uint16_t width, uint16_t height) : m_width(width), m_height(height), m_window(NULL), m_ennemiesCount(0)
 {
 	m_MainPlayer.m_name = "bbcorp";
 	sfmlInit();
+	engine::Map::constructMapRects();
 }
 
 engine::Game::~Game()
@@ -39,12 +42,12 @@ void engine::Game::sfmlInit(void)
 	sfmlCreateWindow();
 	sfmlLoadAllTextures();
 	sfmlLoadPlayerTexture("../res/character.png");
+	sfmlCreateEnnemyTexture();
 }
 
 bool engine::Game::sfmlCleanup(void)
 {
 	sfmlDestroyTextures();
-	sfmlDestroyEnnemiesPlayer();
 	delete m_window;
 	m_window = NULL;
 	return true;
@@ -64,10 +67,16 @@ void engine::Game::sfmlRender(void)
 	m_window->setView(m_MainPlayer.m_PlayerView);
 	uint16_t ennemiesCount(0);
 	engine::Event engineEvent(m_window, &m_MainPlayer);
+	sf::Font font;
+	if (!font.loadFromFile("../res/calibri.ttf"))
+		return;
+	sf::Text text;
+	text.setString("Bonjour !");
+	text.setCharacterSize(100);
+	text.setFillColor(sf::Color::Red);
 	while (m_window->isOpen())
 	{
 		engineEvent.handleEvents();
-		EnnemiesPlayersUpdateState();
 		m_window->clear();
 		if (m_MainPlayer.m_PlayerView.getCenter() != LastView.getCenter()) // If view has changed
 		{
@@ -80,6 +89,8 @@ void engine::Game::sfmlRender(void)
 			ennemiesCount = m_ennemiesCount;
 		}
 		sfmlDisplaySprites();
+		m_window->draw(text);
+		//drawWalls();
 		m_window->display();
 			
 	}
@@ -106,6 +117,19 @@ bool engine::Game::deleteSpriteFromQueue(sf::Sprite *o_sprite)
 void engine::Game::addSpriteToQueue(sf::Sprite *o_sprite)
 {
 	m_spriteQueue.push_back(o_sprite);
+}
+
+void engine::Game::drawWalls(void)
+{
+	std::vector<sf::FloatRect> walls(engine::Map::getWalls());
+	for (uint16_t i = 0; i < walls.size(); i++)
+	{
+		sf::RectangleShape rect;
+		rect.setPosition(sf::Vector2f(walls.at(i).left, walls.at(i).top));
+		rect.setSize(sf::Vector2f(walls.at(i).width, walls.at(i).height));
+		rect.setFillColor(sf::Color::Red);
+		m_window->draw(rect);
+	}
 }
 
 
@@ -154,7 +178,7 @@ void engine::Game::sfmlLoadPlayerTexture(string fileName)
 
 void engine::Game::sfmlLoadEnnemiesTexture(string fileName, uint16_t position)
 {
-	if (m_ennemiesPlayers.size() < position)
+	if (m_MainPlayer.m_ennemiesPlayers.size() < position)
 		return;
 	position--;
 	sf::Texture *texture = new sf::Texture;
@@ -169,25 +193,35 @@ void engine::Game::sfmlLoadEnnemiesTexture(string fileName, uint16_t position)
 		return;
 	}
 	texture->setSmooth(true);
-	m_ennemiesPlayers.at(position)->m_sprite.setTexture(*texture);
-	m_spriteQueue.push_back(&m_ennemiesPlayers.at(position)->m_sprite);
+	m_MainPlayer.m_ennemiesPlayers.at(position).m_sprite.setTexture(*texture);
+	m_spriteQueue.push_back(&m_MainPlayer.m_ennemiesPlayers.at(position).m_sprite);
+}
+
+void engine::Game::sfmlCreateEnnemyTexture(void)
+{
+	m_ennemy_texture = new sf::Texture;
+	try {
+		if (!m_ennemy_texture->loadFromFile("../res/ennemy.png"))
+			throw string("Can't load ../res/ennemy.png");
+	}
+	catch (string const& exception)
+	{
+		cerr << exception << endl;
+		sf::err();
+		return;
+	}
+	m_ennemy_texture->setSmooth(true);
 }
 
 void engine::Game::EnnemiesPlayersUpdateState(void)
 {
-	for (uint16_t i = 0; i < m_ennemiesPlayers.size(); i++)
-		m_ennemiesPlayers.at(i)->updateState();
+	/* NO NEED ? */
+	for (uint16_t i = 0; i < m_MainPlayer.m_ennemiesPlayers.size(); i++)
+		m_MainPlayer.m_ennemiesPlayers.at(i).updateState();
 }
 
 void engine::Game::sfmlDestroyTextures(void)
 {
 	for (uint16_t i = 0; i < m_spriteQueue.size(); i++)
 		delete m_spriteQueue.at(i)->getTexture();
-}
-
-void engine::Game::sfmlDestroyEnnemiesPlayer(void)
-{
-	for (uint16_t i = 0; i < m_ennemiesPlayers.size(); i++)
-		delete m_ennemiesPlayers.at(i);
-
 }

@@ -43,10 +43,10 @@ void engine::Event::handleEvents(void)
 			}
 		}
 		if (m_window->hasFocus())
-			handleKeyboard();
+			handleKeyboardGame();
 }
 
-void engine::Event::handleKeyboard(void)
+void engine::Event::handleKeyboardGame(void)
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z) || sf::Keyboard::isKeyPressed(sf::Keyboard::Q) || sf::Keyboard::isKeyPressed(sf::Keyboard::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
@@ -56,7 +56,7 @@ void engine::Event::handleKeyboard(void)
 	else
 	{
 		m_MainPlayer->m_state = IDLE;
-		m_MainPlayer->m_clockUpdate->restart();
+		m_MainPlayer->m_clockUpdate.restart();
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z) && sf::Keyboard::isKeyPressed(sf::Keyboard::Q))

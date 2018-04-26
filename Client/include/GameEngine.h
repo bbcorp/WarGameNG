@@ -5,6 +5,7 @@
 #include <thread>
 #include <SFML/Graphics.hpp>
 #include "MainPlayer.h"
+#include "Map.h"
 #include "Event.h"
 
 namespace engine
@@ -20,8 +21,8 @@ namespace engine
 		bool deleteSpriteFromQueue(sf::Sprite *o_sprite);
 		void addSpriteToQueue(sf::Sprite *o_sprite);
 
+		static sf::Texture *m_ennemy_texture;
 		MainPlayer m_MainPlayer;
-		std::vector<MainPlayer*> m_ennemiesPlayers; /* /!\ FIX MY NAME /!\ */
 		uint16_t m_ennemiesCount;
 
 	private:
@@ -30,10 +31,11 @@ namespace engine
 		void sfmlLoadTexture(std::string fileName);
 		void sfmlLoadPlayerTexture(std::string fileName);
 		void sfmlLoadEnnemiesTexture(std::string fileName, uint16_t position);
+		static void sfmlCreateEnnemyTexture(void);
 		void EnnemiesPlayersUpdateState(void);
 		void sfmlLoadAllTextures(void);
 		void sfmlDestroyTextures(void);
-		void sfmlDestroyEnnemiesPlayer(void);
+		void drawWalls(void);
 
 		sf::RenderWindow *m_window;
 		uint16_t m_width;

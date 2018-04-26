@@ -11,7 +11,7 @@ namespace engine
 	public:
 		Event(sf::RenderWindow *window, MainPlayer *o_MainPlayer);
 		void handleEvents(void);
-		void handleKeyboard(void);
+		void handleKeyboardGame(void);
 
 	private:
 		sf::Event m_event;

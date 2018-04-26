@@ -1,11 +1,6 @@
-#ifndef PLAYER_H
-#define PLAYER_H
-#include <SFML/Graphics/Rect.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/View.hpp>
-#include <SFML/System/Clock.hpp>
-#include <string>
-#include "PlayerBase.h"
+#ifndef MAIN_PLAYER_H
+#define MAIN_PLAYER_H
+#include "Player.h"
 
 typedef enum e_wallPosition
 {
@@ -15,29 +10,23 @@ typedef enum e_wallPosition
 	WALL_BOTH = 3
 } t_wallPosition;
 
-class MainPlayer : public PlayerBase
+class MainPlayer : public Player
 {
 public:
-	MainPlayer(void);
+	MainPlayer();
 	MainPlayer(std::string name);
-	MainPlayer(const WarGame::fb::playerBase *pBase);
-	virtual ~MainPlayer();
-	void updateState(void);
-	void applyModificationFromNetwork(MainPlayer *o_player);
 	void move(int16_t x, int16_t y);
 
-	sf::Sprite m_sprite;
 	sf::View m_PlayerView;
-	sf::Clock *m_clockUpdate;
+	std::vector<Player> m_ennemiesPlayers;
+
 private:
 	void nearWallMode(int16_t x, int16_t y);
-	
+	bool checkWallsCollision(int16_t x, int16_t y);
+	bool checkPlayersCollision(int16_t x, int16_t y);
+
 	sf::FloatRect m_PlayerViewRect;
-	sf::Texture *m_ennemy_texture;
 	std::vector<sf::FloatRect> m_wallRects;
-	int32_t m_lastAnim;
-	int16_t m_walkAnimationStep;
-	int16_t m_deathAnimationStep;
 };
 
 #endif
