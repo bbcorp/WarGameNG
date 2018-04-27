@@ -5,23 +5,10 @@
 image: gpp-cmake:latest
 
 stages:
-  - cmake
   - build
+before_script:
+  - cmake .
 
-cmake:
-  tags:
-    - docker
-  stage: cmake
-  before_script:
-    - pwd
-  # instead of calling g++ directly you can also use some build toolkit like make
-  # install the necessary build tools when needed
-  # before_script: 
-  #   - apt update && apt -y install make autoconf 
-  script: 
-    - cmake .
-
-# run tests using the binary built before
 client:
   tags:
     - docker
@@ -35,5 +22,5 @@ server:
     - docker
   stage: build
   script:
-    - cd ../Server
+    - cd Server
     - make
