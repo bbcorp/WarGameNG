@@ -9,6 +9,8 @@ stages:
   - build
 
 cmake:
+  tags:
+    - docker
   stage: cmake
   before_script:
     - pwd
@@ -21,12 +23,16 @@ cmake:
 
 # run tests using the binary built before
 client:
+  tags:
+    - docker
   stage: build
   script:
     - cd Client
     - make
 
 server:
+  tags:
+    - docker
   stage: build
   script:
     - cd ../Server
