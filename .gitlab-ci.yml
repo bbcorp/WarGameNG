@@ -10,6 +10,8 @@ stages:
 
 cmake:
   stage: cmake
+  before_script:
+    - pwd
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   # before_script: 
