@@ -19,7 +19,6 @@ cmake:
   # before_script: 
   #   - apt update && apt -y install make autoconf 
   script: 
-    - cd
     - cmake .
 
 # run tests using the binary built before
