@@ -20,7 +20,6 @@
 #include <iostream>
 #include <stdlib.h>
 #include <SFML/System/Clock.hpp>
-#include <windows.h>
 
 using namespace std;
 
