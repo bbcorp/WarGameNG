@@ -7,7 +7,7 @@ image: gpp-cmake:latest
 stages:
   - build
 before_script:
-  - apt install libfreetype6-dev libjpeg-dev libx11-dev libxrandr-dev libsndfile1-dev libopenal-dev -qq -y
+  - apt install libfreetype6-dev libjpeg-dev libx11-dev libxrandr-dev libsndfile1-dev libopenal-dev libgl1-mesa-glx -qq -y
   - cmake .
 
 client:
