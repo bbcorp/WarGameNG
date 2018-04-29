@@ -21,8 +21,8 @@ public:
 	PlayerBase(void);
 	PlayerBase(std::string name);
 	PlayerBase(const WarGame::fb::playerBase *pBase);
-	bool PlayerBase::operator==(PlayerBase const& Playerb);
-	bool PlayerBase::operator!=(PlayerBase const& Playerb);
+	bool operator==(PlayerBase const& Playerb);
+	bool operator!=(PlayerBase const& Playerb);
 	void receiveDamage(uint16_t damage);
 	std::string encodeFlatBuf(void) const;
 	std::string requestId(void) const;

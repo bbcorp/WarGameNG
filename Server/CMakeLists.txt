@@ -21,3 +21,5 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../library/lib/${CMAKE_GENERATOR_PL
 file(GLOB SRCS src/*.cpp)
 
 add_executable(Server ${SRCS})
+
+target_link_libraries(Server sfml-system pthread)
