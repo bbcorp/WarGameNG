@@ -17,6 +17,8 @@
 
 #include "../include/Event.h"
 #include "../include/sprite.h"
+#include "../include/ft_Delay.h"
+#include "../include/Bullet.h"
 #include <iostream>
 #include <stdlib.h>
 #include <SFML/System/Clock.hpp>
@@ -97,5 +99,13 @@ void engine::Event::handleKeyboardGame(void)
 	{
 		m_MainPlayer->move(2, 0);
 		m_MainPlayer->m_orientation = RIGHT;
+	}
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && engine::ft_Delay(&engine::Bullet::m_clock, sf::milliseconds(150)))
+	{
+		m_MainPlayer->m_state = FIRE;
+		sf::Vector2i mousePos(sf::Mouse::getPosition(*m_window));
+		cout << "mouse x: " << mousePos.x << ", mouse y: " << mousePos.y << endl;
+		m_MainPlayer->fire(mousePos.x, mousePos.y);
 	}
 }

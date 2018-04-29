@@ -15,32 +15,17 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 
-#include <stdlib.h>
-#include <iostream>
-#include <vector>
-#include "../include/GameEngine.h"
-#include "../include/NetworkEngine.h"
+#include "../include/ft_Delay.h"
 
-#ifdef _DEBUG
-#pragma comment(lib,"sfml-graphics-d.lib")
-#pragma comment(lib,"sfml-window-d.lib")
-#pragma comment(lib,"sfml-system-d.lib")
-#else
-#pragma comment(lib,"sfml-graphics.lib")
-#pragma comment(lib,"sfml-window.lib")
-#pragma comment(lib,"sfml-system.lib")
-#endif
-
-using namespace std;
-
-
-int main(int argc, char **argv[])
+bool engine::ft_Delay(sf::Clock *clock, sf::Time sleepTimeAnim)
 {
-	static engine::Game EngineGame((uint16_t) 800, (uint16_t) 600);
-	static engine::Network EngineNetwork("127.0.0.1", &EngineGame);
-
-	EngineGame.sfmlRender();
-
-
-	return EXIT_SUCCESS;
+	if (clock->getElapsedTime() < sleepTimeAnim)
+	{
+		return false;
+	}
+	else
+	{
+		clock->restart();
+		return true;
+	}
 }

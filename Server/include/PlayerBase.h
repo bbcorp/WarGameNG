@@ -1,6 +1,7 @@
 #ifndef PLAYERBASE_H
 #define PLAYERBASE_H
 #include <SFML/Graphics/Rect.hpp>
+#include <SFML/System/Clock.hpp>
 #include <string>
 #include <asio.hpp>
 #include "../../Client/include/wargame_generated.h"
@@ -31,10 +32,12 @@ public:
 	std::string m_name;
 	asio::ip::udp::endpoint m_sender_enpoint;
 	int16_t m_id;
-protected:
+	sf::Clock m_clock;
+	sf::Vector2u m_pos;
+
+private:
 	uint16_t m_health;
 	uint16_t m_ammo;
-	sf::Vector2u m_pos;
 	uint16_t m_orientation;
 	uint16_t m_state;
 };

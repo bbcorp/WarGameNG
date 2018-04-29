@@ -137,7 +137,6 @@ void engine::Game::sfmlLoadAllTextures(void)
 {
 	// LOAD HERE all textures needed
 	sfmlLoadTexture("../res/background_dev.png");
-	sfmlLoadTexture("../res/blood.png");
 }
 
 void engine::Game::sfmlLoadTexture(string fileName)

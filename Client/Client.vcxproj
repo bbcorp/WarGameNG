@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Bullet.cpp" />
     <ClCompile Include="src\Event.cpp" />
     <ClCompile Include="src\ft_Delay.cpp" />
     <ClCompile Include="src\GameEngine.cpp" />
@@ -28,10 +29,10 @@
     <ClCompile Include="src\NetworkEngine.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\PlayerBase.cpp" />
-    <ClCompile Include="src\protobuf_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AudioEngine.h" />
+    <ClInclude Include="include\Bullet.h" />
     <ClInclude Include="include\Event.h" />
     <ClInclude Include="include\ft_Delay.h" />
     <ClInclude Include="include\GameEngine.h" />
@@ -40,7 +41,6 @@
     <ClInclude Include="include\NetworkEngine.h" />
     <ClInclude Include="include\Player.h" />
     <ClInclude Include="include\PlayerBase.h" />
-    <ClInclude Include="include\protobuf_test.h" />
     <ClInclude Include="include\sprite.h" />
     <ClInclude Include="include\wargame_generated.h" />
   </ItemGroup>

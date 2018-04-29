@@ -188,24 +188,28 @@ void engine::Map::constructMapRects(void)
 			rect.width += 32;
 		m_walls.push_back(rect);
 	}
-	for (uint16_t tries = 0; tries < 5; tries++) // Need 5 tries to be the most optimized
+
+	uint16_t lastSize(0);
+
+	do
 	{
-		for (uint16_t i = 0; i < m_walls.size(); i++)
+		lastSize = m_walls.size();
+		for (std::vector<sf::FloatRect>::iterator i = m_walls.begin(); i != m_walls.end(); i++)
 		{
-			for (uint16_t j = 0; j < m_walls.size(); j++)
+			for (std::vector<sf::FloatRect>::iterator j = m_walls.begin(); j != m_walls.end(); j++)
 			{
-				if (i != j && m_walls.at(i).width == m_walls.at(j).width && m_walls.at(i).height == m_walls.at(j).height && m_walls.at(i).left == m_walls.at(j).left && m_walls.at(i).top > 0 && m_walls.at(i).top + m_walls.at(i).height == m_walls.at(j).top)
+				if (*i != *j && i->width == j->width && i->height == j->height && i->left == j->left && i->top > 0 && i->top + i->height == j->top)
 				{
-					m_walls.at(i).height += m_walls.at(j).height;
-					m_walls.erase(m_walls.begin() + j);
+					i->height += j->height;
+					j = m_walls.erase(j);
 				}
 
 			}
 		}
-	}
-#ifdef _DEBUG
+		
+	} while (m_walls.size() < lastSize); // While size of m_walls is reduced, continue
+
 	cout << "Loaded " << m_walls.size() << " elements in "<< clock.getElapsedTime().asMilliseconds() << "ms." << endl;
-#endif
 	
 /*	while (true)
 	{

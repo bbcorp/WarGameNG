@@ -25,12 +25,12 @@
 using namespace std;
 using asio::ip::udp;
 
-engine::Network::Network(const string address, engine::Game *GameEngine) : m_receiver_endpoint(asio::ip::address::from_string(address), PORT), m_socket(NULL), m_thread_receiveLoop(NULL), m_thread_streamMainPlayerData(NULL)
+engine::Network::Network(const string address, engine::Game *GameEngine) : m_receiver_endpoint(asio::ip::address::from_string(address), PORT), m_socket(NULL), m_thread_receiveLoop(NULL), m_thread_streamMainPlayerData(NULL), m_GameEngine(GameEngine)
 {
 	m_socket = new udp::socket(m_io_service);
 	m_socket->open(udp::v4());
-	m_thread_streamMainPlayerData = new thread(&engine::Network::streamMainPlayerData, this, GameEngine);
-	m_thread_receiveLoop = new thread(&engine::Network::receiveLoop, this, GameEngine);
+	m_thread_streamMainPlayerData = new thread(&engine::Network::streamMainPlayerData, this);
+	m_thread_receiveLoop = new thread(&engine::Network::receiveLoop, this);
 }
 engine::Network::~Network()
 {
@@ -57,24 +57,43 @@ size_t engine::Network::sendData(std::string *send_buffer)
 	return m_socket->send_to(asio::buffer(*send_buffer), m_receiver_endpoint);
 }
 
-void engine::Network::streamMainPlayerData(engine::Game *GameEngine)
+void engine::Network::streamMainPlayerData(void)
 {
 	MainPlayer lastMainPlayer;
 	sf::Clock clockPlayerData;
 
-	string send_buffer;
-	requestIdTry(&GameEngine->m_MainPlayer, 3);
+	requestIdTry(&m_GameEngine->m_MainPlayer, 3);
 
 	while (true)
 	{
-		if (GameEngine->m_MainPlayer != lastMainPlayer && engine::ft_Delay(&clockPlayerData, sf::milliseconds(14)))
+		if (
+			(m_GameEngine->m_MainPlayer != lastMainPlayer
+			&& engine::ft_Delay(&clockPlayerData, sf::milliseconds(14)))
+			|| engine::ft_Delay(&clockPlayerData, sf::milliseconds(500)) // keepalive
+			)
 		{
-				send_buffer = GameEngine->m_MainPlayer.encodeFlatBuf();
-				size_t sendLength = sendData(&send_buffer);
-				lastMainPlayer = GameEngine->m_MainPlayer;
+			sendPlayerData();
+			sendPlayerBullets();
+			lastMainPlayer = m_GameEngine->m_MainPlayer;
 		}
 		this_thread::sleep_for(100us);
 	}
+}
+
+void engine::Network::sendPlayerData(void)
+{
+	m_send_buffer = m_GameEngine->m_MainPlayer.encodeFlatBuf();
+	size_t sendLength = sendData(&m_send_buffer);
+}
+
+void engine::Network::sendPlayerBullets(void)
+{
+	for (uint16_t i = 0; i < m_GameEngine->m_MainPlayer.m_bulletQueue.size(); i++)
+	{
+		m_send_buffer = m_GameEngine->m_MainPlayer.m_bulletQueue.at(i).encodeFlatBuf();
+		size_t sendLength = sendData(&m_send_buffer);
+	}
+
 }
 
 bool engine::Network::requestIdTry(MainPlayer *o_MainPlayer, const uint16_t retryTimes)
@@ -86,15 +105,15 @@ bool engine::Network::requestIdTry(MainPlayer *o_MainPlayer, const uint16_t retr
 	uint16_t i(1);
 	while (i <= retryTimes)
 	{
-		for (uint16_t j = 0; j < 5; j++) // 500 ms total
+		for (uint16_t j = 0; j < 5; j++) // 1200 ms total
 		{
 			try {
 				if (o_MainPlayer->m_id != -1)
 					return true;
 				else
 				{
-					this_thread::sleep_for(100ms);
-					throw runtime_error("Server not answering: waiting 100ms");
+					this_thread::sleep_for(300ms);
+					throw runtime_error("Server not answering: waiting 300ms");
 				}
 			}
 			catch (exception const &e)
@@ -132,7 +151,7 @@ bool engine::Network::requestIdTry(MainPlayer *o_MainPlayer, const uint16_t retr
 
 }
 
-void engine::Network::receiveLoop(engine::Game *GameEngine)
+void engine::Network::receiveLoop(void)
 {
 	size_t receiveLength(0);
 	udp::endpoint server_endpoint;
@@ -151,7 +170,7 @@ void engine::Network::receiveLoop(engine::Game *GameEngine)
 #ifdef _DEBUG
 		std::cout << "Received " << receiveLength << " bytes of data: " << m_receive_buffer << std::endl; // We've received data !!
 #endif
-		decodeFlatBuf(receiveLength, GameEngine);
+		decodeFlatBuf(receiveLength);
 		// reset the buffer
 		memset(m_receive_buffer, 0, MAX_BUFFER);
 	}
@@ -159,7 +178,7 @@ void engine::Network::receiveLoop(engine::Game *GameEngine)
 
 using namespace WarGame::fb;
 
-bool engine::Network::decodeFlatBuf(size_t receiveLength, engine::Game *GameEngine)
+bool engine::Network::decodeFlatBuf(size_t receiveLength)
 {
 	// Make sure the buffer we received is OK
 	flatbuffers::Verifier verifier(m_receive_buffer, receiveLength);
@@ -167,19 +186,19 @@ bool engine::Network::decodeFlatBuf(size_t receiveLength, engine::Game *GameEngi
 	if (VerifyrequestIdBuffer(verifier))
 	{
 		auto requestIdAnswer = flatbuffers::GetRoot<requestId>(m_receive_buffer);
-		if (GameEngine->m_MainPlayer.m_id == -1)
-			GameEngine->m_MainPlayer.m_id = requestIdAnswer->newid();
+		if (m_GameEngine->m_MainPlayer.m_id == -1)
+			m_GameEngine->m_MainPlayer.m_id = requestIdAnswer->newid();
 	}
 	else if (VerifyplayerBaseBuffer(verifier))
 	{
 		bool found(false);
 		auto pBase = flatbuffers::GetRoot<playerBase>(m_receive_buffer);
 		Player o_tempPlayer(pBase);
-		for (uint16_t i = 0; i < GameEngine->m_MainPlayer.m_ennemiesPlayers.size(); i++)
+		for (uint16_t i = 0; i < m_GameEngine->m_MainPlayer.m_ennemiesPlayers.size(); i++)
 		{
-			if (o_tempPlayer.m_name == GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).m_name && o_tempPlayer.m_id == GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).m_id) // Player already exists
+			if (o_tempPlayer.m_name == m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).m_name && o_tempPlayer.m_id == m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).m_id) // Player already exists
 			{
-				if (GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i) == o_tempPlayer)
+				if (m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i) == o_tempPlayer)
 				{
 					found = true;
 					break; // Data is the same, no need to store
@@ -187,8 +206,8 @@ bool engine::Network::decodeFlatBuf(size_t receiveLength, engine::Game *GameEngi
 				else
 				{
 					found = true;
-					GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).applyModificationFromNetwork(&o_tempPlayer); // Data has changed so store it !
-					GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).updateState();
+					m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).applyModificationFromNetwork(&o_tempPlayer); // Data has changed so store it !
+					m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).updateState();
 					break; // No need to go further we found it.
 				}
 			}
@@ -196,8 +215,8 @@ bool engine::Network::decodeFlatBuf(size_t receiveLength, engine::Game *GameEngi
 		if (!found) // We didn't find it locally !
 		{
 			o_tempPlayer.updateState();
-			GameEngine->m_MainPlayer.m_ennemiesPlayers.push_back(o_tempPlayer); // So, store it !
-			GameEngine->m_ennemiesCount++;
+			m_GameEngine->m_MainPlayer.m_ennemiesPlayers.push_back(o_tempPlayer); // So, store it !
+			m_GameEngine->m_ennemiesCount++;
 			return true;
 		}
 	}
@@ -205,19 +224,19 @@ bool engine::Network::decodeFlatBuf(size_t receiveLength, engine::Game *GameEngi
 	{
 		auto fbPlayers = flatbuffers::GetRoot<players>(m_receive_buffer);
 		// Store new ones
-		if (GameEngine->m_MainPlayer.m_ennemiesPlayers.size() == 0) // There's no player
+		if (m_GameEngine->m_MainPlayer.m_ennemiesPlayers.size() == 0) // There's no player
 		{
 			for (uint16_t i = 0; i < fbPlayers->vecPlayers()->size(); i++)
 			{
 				Player o_tempPlayer(fbPlayers->vecPlayers()->Get(i));
 				o_tempPlayer.updateState();
-				GameEngine->m_MainPlayer.m_ennemiesPlayers.push_back(o_tempPlayer);
-				GameEngine->addSpriteToQueue(&GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).m_sprite);
-				GameEngine->m_ennemiesCount++;
+				m_GameEngine->m_MainPlayer.m_ennemiesPlayers.push_back(o_tempPlayer);
+				m_GameEngine->addSpriteToQueue(&m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).m_sprite);
+				m_GameEngine->m_ennemiesCount++;
 			}
 			return true;
 		}
-		else if (GameEngine->m_MainPlayer.m_ennemiesPlayers.size() > 0)
+		else if (m_GameEngine->m_MainPlayer.m_ennemiesPlayers.size() > 0)
 		{
 			bool found(false);
 			uint16_t i;
@@ -226,11 +245,11 @@ bool engine::Network::decodeFlatBuf(size_t receiveLength, engine::Game *GameEngi
 			{
 				found = false;
 				Player o_tempPlayer(fbPlayers->vecPlayers()->Get(i));
-				for (j = 0; j < GameEngine->m_MainPlayer.m_ennemiesPlayers.size(); j++)
+				for (j = 0; j < m_GameEngine->m_MainPlayer.m_ennemiesPlayers.size(); j++)
 				{
-					if (o_tempPlayer.m_name == GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j).m_name && o_tempPlayer.m_id == GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j).m_id) // Player already exists
+					if (o_tempPlayer.m_name == m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j).m_name && o_tempPlayer.m_id == m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j).m_id) // Player already exists
 					{
-						if (GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j) == o_tempPlayer)
+						if (m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j) == o_tempPlayer)
 						{
 							found = true;
 							break; // Data is the same, no need to store
@@ -238,8 +257,8 @@ bool engine::Network::decodeFlatBuf(size_t receiveLength, engine::Game *GameEngi
 						else
 						{
 							found = true;
-							GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j).applyModificationFromNetwork(&o_tempPlayer); // Data has changed so store it !
-							GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j).updateState();
+							m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j).applyModificationFromNetwork(&o_tempPlayer); // Data has changed so store it !
+							m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j).updateState();
 							break; // No need to go further we found it.
 						}
 					}
@@ -247,10 +266,21 @@ bool engine::Network::decodeFlatBuf(size_t receiveLength, engine::Game *GameEngi
 				if (!found) // We didn't find it locally !
 				{
 					o_tempPlayer.updateState();
-					GameEngine->m_MainPlayer.m_ennemiesPlayers.push_back(o_tempPlayer); // So, store it !
-					GameEngine->m_ennemiesCount++;
+					m_GameEngine->m_MainPlayer.m_ennemiesPlayers.push_back(o_tempPlayer); // So, store it !
+					m_GameEngine->m_ennemiesCount++;
 				}
 			}
+		}
+	}
+	else if (VerifybulletsBuffer(verifier))
+	{
+		if (m_GameEngine->m_MainPlayer.m_bullets.size() > 0)
+			m_GameEngine->m_MainPlayer.m_bullets.clear(); /* /!\ FIX ME /!\ */
+		auto fbBullets = flatbuffers::GetRoot<bullets>(m_receive_buffer);
+		for (uint16_t bullet = 0; bullet < fbBullets->vecBullets()->size(); bullet++)
+		{
+			engine::Bullet tempBullet(fbBullets->vecBullets()->Get(bullet));
+			m_GameEngine->m_MainPlayer.m_bullets.push_back(tempBullet);
 		}
 	}
 	else

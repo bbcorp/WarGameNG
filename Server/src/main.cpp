@@ -18,11 +18,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
-#include <asio.hpp>
-#include "../../Client/include/protobuf_test.h"
 #include "../include/NetworkEngine.h"
-#define PORT 1977
-#define MAX_LENGTH 4096
 
 #ifdef _DEBUG
 #pragma comment(lib,"sfml-graphics-d.lib")
@@ -36,7 +32,7 @@
 
 using namespace std;
 
-int main(int argc, int *argv[])
+int main(int argc, char **argv[])
 {
 	static engine::Network NetworkEngine;
 	NetworkEngine.receiveLoop();

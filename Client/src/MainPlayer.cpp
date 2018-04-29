@@ -1,3 +1,20 @@
+/*
+* WarGame - small 2D game for studies
+* Copyright (C) 2018  Bertrand Caplet <bbcorp@chunkz.net>
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <https://www.gnu.org/licenses/>. */
+
 #include "../include/MainPlayer.h"
 
 using namespace std;
@@ -42,6 +59,12 @@ void MainPlayer::move(int16_t x, int16_t y)
 	nearWallMode(x, y);
 	m_pos.x += x;
 	m_pos.y += y;
+}
+
+void MainPlayer::fire(uint16_t x, uint16_t y)
+{
+	engine::Bullet o_bullet(m_pos.x, m_pos.y, m_PlayerViewRect.left + x, m_PlayerViewRect.top + y, m_id);
+	m_bulletQueue.push_back(o_bullet);
 }
 
 bool MainPlayer::checkWallsCollision(int16_t x, int16_t y)
