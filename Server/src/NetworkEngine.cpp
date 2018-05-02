@@ -139,16 +139,16 @@ bool engine::Network::storePlayer(PlayerBase *Player)
 	}
 	else // There is
 	{
-		for (PlayerBase player : m_Players)
+		for (vector<PlayerBase>::iterator player = m_Players.begin(); player != m_Players.end(); player++)
 		{
-			if (player == *Player)
+			if (*player == *Player)
 			{
-				player.m_clock.restart();
+				player->m_clock.restart();
 				return false; // Player already exist with same data, do not store !
 			}
-			else if (player.m_sender_enpoint == m_sender_enpoint && player != *Player) // Player exists but data has changed.
+			else if (player->m_sender_enpoint == m_sender_enpoint && *player != *Player) // Player exists but data has changed.
 			{
-				player = *Player;
+				*player = *Player;
 				sendPlayerToAllClients(Player, 0);
 				return true;
 			}
