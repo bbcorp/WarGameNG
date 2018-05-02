@@ -22,16 +22,16 @@
 using namespace std;
 
 
-PlayerBase::PlayerBase() : m_id(-1), m_health((uint16_t)100), m_ammo((uint16_t)30), m_state((uint16_t)0), m_orientation((uint16_t)0), m_pos(0, 0)
+PlayerBase::PlayerBase() : m_id(-1), m_pos(0, 0), m_health((uint16_t)100), m_orientation((uint16_t)0), m_state((uint16_t)0), m_ammo((uint16_t)30)
 {
 
 }
 
-PlayerBase::PlayerBase(string name) : m_name(name), m_id(-1), m_health((uint16_t)100), m_ammo((uint16_t)30), m_state((uint16_t)0), m_orientation((uint16_t)0), m_pos(0, 0)
+PlayerBase::PlayerBase(string name) : m_id(-1), m_name(name), m_pos(0, 0), m_health((uint16_t)100), m_orientation((uint16_t)0), m_state((uint16_t)0), m_ammo((uint16_t)30)
 {
 
 }
-PlayerBase::PlayerBase(const WarGame::fb::playerBase *pBase) : m_name(pBase->name()->data(), pBase->name()->size()), m_id(pBase->id()), m_health(pBase->health()), m_ammo(pBase->ammo()), m_state(pBase->state()), m_orientation(pBase->orientation()), m_pos(pBase->pos()->x(), pBase->pos()->y())
+PlayerBase::PlayerBase(const WarGame::fb::playerBase *pBase) : m_name(pBase->name()->data(), pBase->name()->size()), m_id(pBase->id()), m_pos(pBase->pos()->x(), pBase->pos()->y()), m_health(pBase->health()), m_orientation(pBase->orientation()), m_state(pBase->state()), m_ammo(pBase->ammo())
 {
 
 }

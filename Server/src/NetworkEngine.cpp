@@ -27,7 +27,7 @@
 using namespace std;
 using asio::ip::udp;
 
-engine::Network::Network() : m_socket(nullptr), m_thread_check_bullet_collision(nullptr), m_thread_player_timeout(nullptr)
+engine::Network::Network() : m_socket(nullptr), m_thread_player_timeout(nullptr), m_thread_check_bullet_collision(nullptr)
 {
 	memset(m_buffer, 0, MAX_BUFFER);
 	m_socket = new udp::socket(m_io_service, udp::endpoint(udp::v4(), PORT));

@@ -20,15 +20,17 @@
 #include <string>
 #include "../include/NetworkEngine.h"
 
-#ifdef _DEBUG
-#pragma comment(lib,"sfml-graphics-d.lib")
-#pragma comment(lib,"sfml-window-d.lib")
-#pragma comment(lib,"sfml-system-d.lib")
-#else
-#pragma comment(lib,"sfml-graphics.lib")
-#pragma comment(lib,"sfml-window.lib")
-#pragma comment(lib,"sfml-system.lib")
-#endif
+#ifdef _MSC_VER
+	#ifdef _DEBUG
+	#pragma comment(lib,"sfml-graphics-d.lib")
+	#pragma comment(lib,"sfml-window-d.lib")
+	#pragma comment(lib,"sfml-system-d.lib")
+	#else
+	#pragma comment(lib,"sfml-graphics.lib")
+	#pragma comment(lib,"sfml-window.lib")
+	#pragma comment(lib,"sfml-system.lib")
+	#endif // _DEBUG
+#endif // _MSC_VER
 
 using namespace std;
 

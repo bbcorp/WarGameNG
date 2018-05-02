@@ -29,13 +29,12 @@ public:
 	uint16_t getHealth(void) const;
 	uint16_t getAmmo(void) const;
 
+	int16_t m_id;
 	std::string m_name;
+	sf::Vector2u m_pos;
+	uint16_t m_health;
 	uint16_t m_orientation;
 	uint16_t m_state;
-	sf::Vector2u m_pos;
-	int16_t m_id;
-	uint16_t m_health;
-
 
 protected:
 	uint16_t m_ammo;

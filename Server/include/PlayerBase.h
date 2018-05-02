@@ -20,26 +20,24 @@ typedef struct s_playerBase
 class PlayerBase
 {
 public:
-	PlayerBase(void);
-	PlayerBase(std::string name);
 	PlayerBase(const WarGame::fb::playerBase *pBase);
 	bool operator==(PlayerBase const& Playerb);
 	bool operator!=(PlayerBase const& Playerb);
 	void receiveDamage(uint16_t damage);
 	flatbuffers::Offset<WarGame::fb::playerBase> returnStructFbPlayerbase(flatbuffers::FlatBufferBuilder *builder);
-
 	std::string encodeFlatBuf(void);
-	std::string m_name;
-	asio::ip::udp::endpoint m_sender_enpoint;
+
 	int16_t m_id;
-	sf::Clock m_clock;
+	std::string m_name;
 	sf::Vector2u m_pos;
+	asio::ip::udp::endpoint m_sender_enpoint;
+	sf::Clock m_clock;
 
 private:
 	uint16_t m_health;
-	uint16_t m_ammo;
 	uint16_t m_orientation;
 	uint16_t m_state;
+	uint16_t m_ammo;
 };
 
 #endif
