@@ -232,7 +232,7 @@ void engine::Network::checkBulletCollision(void)
 				tempBullet = sf::FloatRect(bullet->m_src_x, bullet->m_src_y, bullet->m_w, bullet->m_h);
 				if (engine::Map::mapIntersection(&tempBullet))
 				{
-					sendMessageToAllClients(&bullet->encodeFlatBufDelete());
+					sendMessageToAllClients(bullet->encodeFlatBufDelete());
 					bullet = m_Bullets.erase(bullet);
 					if (bullet == m_Bullets.end())
 						break;
@@ -244,7 +244,7 @@ void engine::Network::checkBulletCollision(void)
 					{
 						player->receiveDamage(10);
 						sendPlayerToAllClients(&*player, 1);
-						sendMessageToAllClients(&bullet->encodeFlatBufDelete());
+						sendMessageToAllClients(bullet->encodeFlatBufDelete());
 						bullet = m_Bullets.erase(bullet);
 						break;
 					}
@@ -277,18 +277,18 @@ void engine::Network::checkBulletCollision(void)
 				std::string send_buffer((char *)builder.GetBufferPointer(), (char *)builder.GetBufferPointer() + builder.GetSize());
 				builder.ReleaseBufferPointer();
 				// Send to all clients
-				sendMessageToAllClients(&send_buffer);
+				sendMessageToAllClients(send_buffer);
 			}
 		}
 		this_thread::sleep_for(10ms);
 	}
 }
 
-size_t engine::Network::sendMessageToAllClients(string *buffer)
+size_t engine::Network::sendMessageToAllClients(string const& buffer)
 {
 	size_t sendLength(0);
 	for (vector<PlayerBase>::iterator player = m_Players.begin(); player != m_Players.end(); player++)
-		sendLength += m_socket->send_to(asio::buffer(*buffer), player->m_sender_enpoint);
+		sendLength += m_socket->send_to(asio::buffer(buffer), player->m_sender_enpoint);
 	return sendLength;
 }
 /*size_t engine::Network::sendPlayersToClient(asio::ip::udp::endpoint *enpoint)

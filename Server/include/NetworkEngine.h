@@ -26,7 +26,7 @@ namespace engine
 		bool storePlayer(PlayerBase *Player);
 		size_t sendPlayerToAllClients(PlayerBase *Player, bool playerHasChanged);
 		size_t sendPlayersToClient(asio::ip::udp::endpoint *endpoint);
-		size_t sendMessageToAllClients(std::string *buffer);
+		size_t sendMessageToAllClients(std::string const &buffer);
 		void checkPlayerTimeout(void);
 		void checkBulletCollision(void);
 
