@@ -31,7 +31,7 @@ PlayerBase::PlayerBase(string name) : m_id(-1), m_name(name), m_pos(0, 0), m_hea
 {
 
 }
-PlayerBase::PlayerBase(const WarGame::fb::playerBase *pBase) : m_name(pBase->name()->data(), pBase->name()->size()), m_id(pBase->id()), m_pos(pBase->pos()->x(), pBase->pos()->y()), m_health(pBase->health()), m_orientation(pBase->orientation()), m_state(pBase->state()), m_ammo(pBase->ammo())
+PlayerBase::PlayerBase(const WarGame::fb::playerBase *pBase) : m_id(pBase->id()), m_name(pBase->name()->data(), pBase->name()->size()), m_pos(pBase->pos()->x(), pBase->pos()->y()), m_health(pBase->health()), m_orientation(pBase->orientation()), m_state(pBase->state()), m_ammo(pBase->ammo())
 {
 
 }
