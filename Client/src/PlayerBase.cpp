@@ -69,9 +69,7 @@ using namespace WarGame::fb;
 string PlayerBase::encodeFlatBuf(void) const
 {
 	flatbuffers::FlatBufferBuilder builder;
-	s_vector2u pos;
-	pos.x = m_pos.x;
-	pos.y = m_pos.y;
+	s_vector2u pos(m_pos.x, m_pos.y);
 	auto pBase = CreateplayerBaseDirect(builder, m_name.data(), m_id, m_health, m_ammo, m_orientation, m_state, &pos);
 	FinishplayerBaseBuffer(builder, pBase);
 	std::string buffer((char *)builder.GetBufferPointer(), (char *)builder.GetBufferPointer() + builder.GetSize());

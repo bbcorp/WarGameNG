@@ -23,9 +23,9 @@
 
 using namespace std;
 
-sf::Texture *engine::Game::m_ennemy_texture(NULL);
+sf::Texture *engine::Game::m_ennemy_texture(nullptr);
 
-engine::Game::Game(uint16_t width, uint16_t height) : m_width(width), m_height(height), m_window(NULL), m_ennemiesCount(0)
+engine::Game::Game(uint16_t width, uint16_t height) : m_ennemiesCount(0), m_window(nullptr), m_width(width), m_height(height)
 {
 	m_MainPlayer.m_name = "bbcorp";
 	sfmlInit();
@@ -48,8 +48,11 @@ void engine::Game::sfmlInit(void)
 bool engine::Game::sfmlCleanup(void)
 {
 	sfmlDestroyTextures();
-	delete m_window;
-	m_window = NULL;
+	if (m_window != nullptr)
+	{
+		delete m_window;
+		m_window = NULL;
+	}
 	return true;
 }
 
