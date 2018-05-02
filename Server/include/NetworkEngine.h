@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <thread>
+#include <mutex>
 #include <asio.hpp>
 #include <SFML/System/Clock.hpp>
 #include "../include/PlayerBase.h"
@@ -28,13 +29,15 @@ namespace engine
 		size_t sendPlayersToClient(asio::ip::udp::endpoint *endpoint);
 		size_t sendMessageToAllClients(std::string const &buffer);
 		void checkPlayerTimeout(void);
-		void checkBulletCollision(void);
+		void processBullets(void);
 
 		asio::ip::udp::endpoint m_sender_enpoint;
 		asio::io_service m_io_service;
 		asio::ip::udp::socket *m_socket;
 		std::vector<PlayerBase> m_Players;
 		std::vector<Bullet> m_Bullets;
+
+		std::mutex m_mutex;
 
 		std::thread *m_thread_player_timeout;
 		std::thread *m_thread_check_bullet_collision;

@@ -3,6 +3,7 @@
 #include <string>
 #include <stdint.h>
 #include <flatbuffers/flatbuffers.h>
+#include <SFML/System/Clock.hpp>
 #include "../../Client/include/wargame_generated.h"
 
 namespace engine
@@ -31,6 +32,7 @@ namespace engine
 		uint16_t m_h;
 
 	private:
+		sf::Clock m_Clock;
 
 	};
 }

@@ -274,3 +274,13 @@ const std::vector<sf::FloatRect> engine::Map::getWalls(void)
 {
 	return m_walls;
 }
+
+bool engine::Map::mapIntersection(sf::FloatRect *rect)
+{
+	for (std::vector<sf::FloatRect>::iterator wall = m_walls.begin(); wall != m_walls.end(); wall++)
+	{
+		if (wall->intersects(*rect))
+			return true;
+	}
+	return false;
+}

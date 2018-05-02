@@ -34,7 +34,7 @@ engine::Network::Network() : m_socket(nullptr), m_thread_player_timeout(nullptr)
 #ifdef NDEBUG
 	m_thread_player_timeout = new thread(&engine::Network::checkPlayerTimeout, this);
 #endif // NDEBUG
-	m_thread_check_bullet_collision = new thread(&engine::Network::checkBulletCollision, this);
+	m_thread_check_bullet_collision = new thread(&engine::Network::processBullets, this);
 	engine::Map::constructMapRects();
 }
 engine::Network::~Network()
@@ -120,7 +120,9 @@ bool engine::Network::decodeFlatBuf(size_t receiveLength)
 	{
 		auto bullet = Getbullet(m_buffer);
 		engine::Bullet o_bullet(bullet);
+		m_mutex.lock();
 		m_Bullets.push_back(o_bullet);
+		m_mutex.unlock();
 		// TODO: send to other players
 		return true;
 	}
@@ -213,7 +215,7 @@ void engine::Network::checkPlayerTimeout(void)
 	}
 }
 
-void engine::Network::checkBulletCollision(void)
+void engine::Network::processBullets(void)
 {
 	sf::FloatRect tempPlayer;
 	sf::FloatRect tempBullet;
@@ -224,11 +226,10 @@ void engine::Network::checkBulletCollision(void)
 			flatbuffers::FlatBufferBuilder builder;
 			// Create a vector of bullets
 			vector<flatbuffers::Offset<bullet>> vecStructFbBullet;
-			uint16_t i(0);
+			m_mutex.lock();
 			for (vector<Bullet>::iterator bullet = m_Bullets.begin(); bullet != m_Bullets.end(); bullet++)
 			{
 				bullet->calculateNextPixel();
-				i++;
 				tempBullet = sf::FloatRect(bullet->m_src_x, bullet->m_src_y, bullet->m_w, bullet->m_h);
 				if (engine::Map::mapIntersection(&tempBullet))
 				{
@@ -268,6 +269,7 @@ void engine::Network::checkBulletCollision(void)
 					}
 				}*/
 			}
+			m_mutex.unlock();
 			// Close builder
 			if (vecStructFbBullet.size() > 0)
 			{

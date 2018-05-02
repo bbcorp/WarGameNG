@@ -28,7 +28,6 @@ public:
 private:
 	void nearWallModeMove(int16_t x, int16_t y);
 	uint16_t nearWallMode(void);
-	bool checkWallsCollision(int16_t x, int16_t y);
 	bool checkPlayersCollision(int16_t x, int16_t y);
 
 	sf::FloatRect m_PlayerViewRect;

@@ -51,7 +51,7 @@ string engine::Bullet::encodeFlatBufDelete(void) const
 
 void engine::Bullet::calculateNextPixel(void)
 {
-	for (uint16_t i = 0; i < 4; i++)
+	for (uint16_t i = 0; i < m_Clock.getElapsedTime().asMilliseconds()/2; i++)
 	{
 		if (m_err > -m_dX)
 		{
@@ -64,6 +64,7 @@ void engine::Bullet::calculateNextPixel(void)
 			m_src_y += m_sY;
 		}
 	}
+	m_Clock.restart();
 }
 
 

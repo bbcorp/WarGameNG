@@ -171,9 +171,9 @@ void engine::Network::receiveLoop(void)
 		{
 			cerr << "ERROR: " << e.what() << endl;
 		}
-/*#ifdef _DEBUG
+#ifdef _DEBUG
 		std::cout << "Received " << receiveLength << " bytes of data: " << m_receive_buffer << std::endl; // We've received data !!
-#endif*/
+#endif
 		decodeFlatBuf(receiveLength);
 		// reset the buffer
 		memset(m_receive_buffer, 0, MAX_BUFFER);

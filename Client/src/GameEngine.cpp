@@ -101,7 +101,7 @@ void engine::Game::sfmlRender(void)
 }
 void engine::Game::sfmlDisplaySprites(void)
 {
-	for (sf::Sprite* sprite : m_spriteQueue)
+	for (sf::Sprite *sprite : m_spriteQueue)
 	{
 		m_window->draw(*sprite);
 	}

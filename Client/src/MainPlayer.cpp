@@ -54,7 +54,8 @@ MainPlayer::MainPlayer(string name) : Player(name), m_PlayerViewRect(0, 0, 800, 
 
 void MainPlayer::move(int16_t x, int16_t y)
 {
-	if (checkWallsCollision(x, y) || checkPlayersCollision(x, y))
+	sf::FloatRect pos(m_pos.x + x, m_pos.y + y, 30, 30);
+	if (engine::Map::mapIntersection(&pos) || checkPlayersCollision(x, y))
 		return;
 	m_sprite.move(x, y);
 	nearWallModeMove(x, y);
@@ -73,22 +74,11 @@ void MainPlayer::fire(uint16_t x, uint16_t y)
 	m_bulletQueue.push_back(o_bullet);
 }
 
-bool MainPlayer::checkWallsCollision(int16_t x, int16_t y)
-{
-	std::vector<sf::FloatRect> walls(engine::Map::getWalls());
-	for (uint16_t i = 0; i < walls.size(); i++)
-	{
-		if (walls.at(i).intersects(sf::FloatRect(m_pos.x + x, m_pos.y + y, 30, 30)))
-			return true;
-	}
-	return false;
-}
-
 bool MainPlayer::checkPlayersCollision(int16_t x, int16_t y)
 {
-	for (uint16_t i = 0; i < m_ennemiesPlayers.size(); i++)
+	for (vector<Player>::iterator player = m_ennemiesPlayers.begin() ; player != m_ennemiesPlayers.end(); player++)
 	{
-		sf::FloatRect ennemyRect(m_ennemiesPlayers.at(i).m_pos.x, m_ennemiesPlayers.at(i).m_pos.y, 30, 30);
+		sf::FloatRect ennemyRect(player->m_pos.x, player->m_pos.y, 30, 30);
 		if (ennemyRect.intersects(sf::FloatRect(m_pos.x + x, m_pos.y + y, 30, 30)))
 			return true;
 	}
