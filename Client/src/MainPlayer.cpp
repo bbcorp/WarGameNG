@@ -87,15 +87,17 @@ bool MainPlayer::checkPlayersCollision(int16_t x, int16_t y)
 
 void MainPlayer::nearWallModeMove(int16_t x, int16_t y)
 {
-	uint16_t wallPositionTmp1 = 0;
-	uint16_t wallPositionTmp2 = 0;
-	uint16_t wallPosition = 0;
-	for (uint16_t i = 0; i < m_wallRects.size(); i++)
+	uint16_t wallPositionTmp1(0);
+	uint16_t wallPositionTmp2(0);
+	uint16_t wallPosition(0);
+	uint16_t i(0);
+	for (sf::FloatRect rect : m_wallRects)
 	{
-		if (m_wallRects.at(i).intersects(sf::FloatRect(sf::Vector2f(m_pos), sf::Vector2f(32.0, 32.0))) && !(i % 2))
+		if (rect.intersects(sf::FloatRect(sf::Vector2f(m_pos), sf::Vector2f(32.0, 32.0))) && !(i % 2))
 			wallPositionTmp1 = WALL_LEFTRIGHT;
-		else if (m_wallRects.at(i).intersects(sf::FloatRect(sf::Vector2f(m_pos), sf::Vector2f(32.0, 32.0))) && i % 2)
+		else if (rect.intersects(sf::FloatRect(sf::Vector2f(m_pos), sf::Vector2f(32.0, 32.0))) && i % 2)
 			wallPositionTmp2 = WALL_UPDOWN;
+		i++;
 	}
 	wallPosition = wallPositionTmp1 + wallPositionTmp2;
 
@@ -111,15 +113,17 @@ void MainPlayer::nearWallModeMove(int16_t x, int16_t y)
 
 uint16_t MainPlayer::nearWallMode(void)
 {
-	uint16_t wallPositionTmp1 = 0;
-	uint16_t wallPositionTmp2 = 0;
-	uint16_t wallPosition = 0;
-	for (uint16_t i = 0; i < m_wallRects.size(); i++)
+	uint16_t wallPositionTmp1(0);
+	uint16_t wallPositionTmp2(0);
+	uint16_t wallPosition(0);
+	uint16_t i(0);
+	for (sf::FloatRect rect : m_wallRects)
 	{
-		if (m_wallRects.at(i).intersects(sf::FloatRect(sf::Vector2f(m_pos), sf::Vector2f(32.0, 32.0))) && !(i % 2))
+		if (rect.intersects(sf::FloatRect(sf::Vector2f(m_pos), sf::Vector2f(32.0, 32.0))) && !(i % 2))
 			wallPositionTmp1 = WALL_LEFTRIGHT;
-		else if (m_wallRects.at(i).intersects(sf::FloatRect(sf::Vector2f(m_pos), sf::Vector2f(32.0, 32.0))) && i % 2)
+		else if (rect.intersects(sf::FloatRect(sf::Vector2f(m_pos), sf::Vector2f(32.0, 32.0))) && i % 2)
 			wallPositionTmp2 = WALL_UPDOWN;
+		i++;
 	}
 	wallPosition = wallPositionTmp1 + wallPositionTmp2;
 	return wallPosition;

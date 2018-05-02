@@ -172,7 +172,7 @@ void engine::Network::receiveLoop(void)
 			cerr << "ERROR: " << e.what() << endl;
 		}
 #ifdef _DEBUG
-		std::cout << "Received " << receiveLength << " bytes of data: " << m_receive_buffer << std::endl; // We've received data !!
+		std::cout << "Received " << receiveLength << " bytes of data." << std::endl; // We've received data !!
 #endif
 		decodeFlatBuf(receiveLength);
 		// reset the buffer
@@ -231,11 +231,11 @@ bool engine::Network::processplayerBaseBuffer(void)
 		m_GameEngine->m_MainPlayer.m_health = o_tempPlayer.m_health;
 		return true;		
 	}
-	for (uint16_t i = 0; i < m_GameEngine->m_MainPlayer.m_ennemiesPlayers.size(); i++)
+	for (Player o_Player : m_GameEngine->m_MainPlayer.m_ennemiesPlayers)
 	{
-		if (o_tempPlayer.m_name == m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).m_name && o_tempPlayer.m_id == m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).m_id) // Player already exists
+		if (o_tempPlayer.m_name == o_Player.m_name && o_tempPlayer.m_id == o_Player.m_id) // Player already exists
 		{
-			if (m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i) == o_tempPlayer)
+			if (o_Player == o_tempPlayer)
 			{
 				found = true;
 				break; // Data is the same, no need to store
@@ -243,8 +243,8 @@ bool engine::Network::processplayerBaseBuffer(void)
 			else
 			{
 				found = true;
-				m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).applyModificationFromNetwork(&o_tempPlayer); // Data has changed so store it !
-				m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(i).updateState();
+				o_Player.applyModificationFromNetwork(&o_tempPlayer); // Data has changed so store it !
+				o_Player.updateState();
 				break; // No need to go further we found it.
 			}
 		}

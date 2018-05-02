@@ -72,7 +72,7 @@ void engine::Network::receiveLoop(void)
 			cerr << "ERROR: " << e.what() << endl;
 		}
 #ifdef _DEBUG
-		std::cout << "Received " << receiveLength << " bytes of data: " << m_buffer << std::endl; // We've received data !!
+		std::cout << "Received " << receiveLength << " bytes of data." << std::endl; // We've received data !!
 #endif
 		decodeFlatBuf(receiveLength);
 		// reset the buffer
@@ -139,16 +139,16 @@ bool engine::Network::storePlayer(PlayerBase *Player)
 	}
 	else // There is
 	{
-		for (uint16_t i = 0; i < m_Players.size(); i++)
+		for (PlayerBase player : m_Players)
 		{
-			if (m_Players.at(i) == *Player)
+			if (player == *Player)
 			{
-				m_Players.at(i).m_clock.restart();
+				player.m_clock.restart();
 				return false; // Player already exist with same data, do not store !
 			}
-			else if (m_Players.at(i).m_sender_enpoint == m_sender_enpoint && m_Players.at(i) != *Player) // Player exists but data has changed.
+			else if (player.m_sender_enpoint == m_sender_enpoint && player != *Player) // Player exists but data has changed.
 			{
-				m_Players.at(i) = *Player;
+				player = *Player;
 				sendPlayerToAllClients(Player, 0);
 				return true;
 			}
@@ -206,7 +206,7 @@ void engine::Network::checkPlayerTimeout(void)
 		{
 			if (engine::ft_Delay(&player->m_clock, sf::milliseconds(1000)))
 			{
-				engine::Logger::log(player->m_name + " has been disconnected, reason : timeout", 0);
+				engine::Logger::log(player->m_name + " has been disconnected, reason: timeout: " + to_string(player->m_clock.getElapsedTime().asMilliseconds()) + "ms", 0);
 				player = m_Players.erase(player);
 				if (player == m_Players.end())
 					break;
@@ -253,21 +253,6 @@ void engine::Network::processBullets(void)
 				if (bullet == m_Bullets.end())
 					break;
 				vecStructFbBullet.push_back(bullet->returnStructFbBullet(&builder));
-				//tempBullet = sf::FloatRect(bullet->m_src_x, bullet->m_src_x, bullet->m_w, bullet->m_h);
-				/*for (vector<PlayerBase>::iterator j = m_Players.begin(); j != m_Players.end(); j++)
-				{
-					tempPlayer = sf::FloatRect(j->m_pos.x, j->m_pos.y, 30, 30);
-
-					if (bullet->m_ownerId != j->m_id && tempBullet.intersects(tempPlayer))
-					{
-						j->receiveDamage(10);
-						i = m_Bullets.erase(i);
-						vector<Bullet>::iterator temp_i(m_Bullets.erase(i));
-						if (temp_i != m_Bullets.end())
-							i = temp_i;
-						sendPlayerToAllClients(&(*j));
-					}
-				}*/
 			}
 			m_mutex.unlock();
 			// Close builder
@@ -293,6 +278,7 @@ size_t engine::Network::sendMessageToAllClients(string const& buffer)
 		sendLength += m_socket->send_to(asio::buffer(buffer), player->m_sender_enpoint);
 	return sendLength;
 }
+
 /*size_t engine::Network::sendPlayersToClient(asio::ip::udp::endpoint *enpoint)
 {
 	if (m_Players.size() == 1)

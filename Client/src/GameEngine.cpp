@@ -102,9 +102,7 @@ void engine::Game::sfmlRender(void)
 void engine::Game::sfmlDisplaySprites(void)
 {
 	for (sf::Sprite *sprite : m_spriteQueue)
-	{
 		m_window->draw(*sprite);
-	}
 }
 
 bool engine::Game::deleteSpriteFromQueue(sf::Sprite *o_sprite)
@@ -140,20 +138,12 @@ void engine::Game::drawWalls(void)
 
 void engine::Game::drawBullets(void)
 {
-	/*for (vector<engine::Bullet>::iterator bullet = m_MainPlayer.m_bullets.begin(); bullet != m_MainPlayer.m_bullets.end(); bullet++)
-	{
-		sf::RectangleShape rect;
-		rect.setPosition(sf::Vector2f(bullet->m_src_x, bullet->m_src_y));
-		rect.setSize(sf::Vector2f(bullet->m_w, bullet->m_h));
-		rect.setFillColor(sf::Color::Black);
-		m_window->draw(rect);
-	}*/
 	m_mutex.lock();
-	for (uint16_t bullet = 0; bullet < m_MainPlayer.m_bullets.size(); bullet++)
+	for (Bullet bullet : m_MainPlayer.m_bullets)
 	{
 		sf::RectangleShape rect;
-		rect.setPosition(sf::Vector2f(m_MainPlayer.m_bullets[bullet].m_src_x, m_MainPlayer.m_bullets[bullet].m_src_y));
-		rect.setSize(sf::Vector2f(m_MainPlayer.m_bullets[bullet].m_w, m_MainPlayer.m_bullets[bullet].m_h));
+		rect.setPosition(sf::Vector2f(bullet.m_src_x, bullet.m_src_y));
+		rect.setSize(sf::Vector2f(bullet.m_w, bullet.m_h));
 		rect.setFillColor(sf::Color::Black);
 		m_window->draw(rect);
 	}
@@ -243,12 +233,12 @@ void engine::Game::sfmlCreateEnnemyTexture(void)
 void engine::Game::EnnemiesPlayersUpdateState(void)
 {
 	/* NO NEED ? */
-	for (uint16_t i = 0; i < m_MainPlayer.m_ennemiesPlayers.size(); i++)
-		m_MainPlayer.m_ennemiesPlayers.at(i).updateState();
+	for (Player o_Player : m_MainPlayer.m_ennemiesPlayers)
+		o_Player.updateState();
 }
 
 void engine::Game::sfmlDestroyTextures(void)
 {
-	for (uint16_t i = 0; i < m_spriteQueue.size(); i++)
-		delete m_spriteQueue.at(i)->getTexture();
+	for (sf::Sprite *sprite : m_spriteQueue)
+		delete sprite->getTexture();
 }
