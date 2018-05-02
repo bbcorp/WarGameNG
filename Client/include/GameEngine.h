@@ -4,6 +4,7 @@
 #include <string>
 #include <thread>
 #include <SFML/Graphics.hpp>
+#include <mutex>
 #include "MainPlayer.h"
 #include "Map.h"
 #include "Event.h"
@@ -24,6 +25,7 @@ namespace engine
 		static sf::Texture *m_ennemy_texture;
 		MainPlayer m_MainPlayer;
 		uint16_t m_ennemiesCount;
+		std::mutex m_mutex;
 
 	private:
 		void sfmlCreateWindow(void);
@@ -36,6 +38,7 @@ namespace engine
 		void sfmlLoadAllTextures(void);
 		void sfmlDestroyTextures(void);
 		void drawWalls(void);
+		void drawBullets(void);
 
 		sf::RenderWindow *m_window;
 		uint16_t m_width;

@@ -34,10 +34,10 @@ public:
 	uint16_t m_state;
 	sf::Vector2u m_pos;
 	int16_t m_id;
+	uint16_t m_health;
 
 
 protected:
-	uint16_t m_health;
 	uint16_t m_ammo;
 };
 

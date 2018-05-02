@@ -22,12 +22,12 @@
 using namespace std;
 
 
-PlayerBase::PlayerBase() : m_id(-1), m_health((uint16_t)100), m_ammo((uint16_t)30), m_state((uint16_t)0), m_orientation((uint16_t)0), m_pos(784, 784)
+PlayerBase::PlayerBase() : m_id(-1), m_health((uint16_t)100), m_ammo((uint16_t)30), m_state((uint16_t)0), m_orientation((uint16_t)0), m_pos(0, 0)
 {
 
 }
 
-PlayerBase::PlayerBase(string name) : m_name(name), m_id(-1), m_health((uint16_t)100), m_ammo((uint16_t)30), m_state((uint16_t)0), m_orientation((uint16_t)0), m_pos(784, 784)
+PlayerBase::PlayerBase(string name) : m_name(name), m_id(-1), m_health((uint16_t)100), m_ammo((uint16_t)30), m_state((uint16_t)0), m_orientation((uint16_t)0), m_pos(0, 0)
 {
 
 }
@@ -79,7 +79,7 @@ string PlayerBase::encodeFlatBuf(void) const
 string PlayerBase::requestId(void) const
 {
 	flatbuffers::FlatBufferBuilder builder;
-	auto request = CreaterequestIdDirect(builder, m_id, m_name.data());
+	auto request = CreaterequestIdDirect(builder, m_id, m_name.data(), 0, 0);
 	FinishrequestIdBuffer(builder, request);
 	std::string buffer((char *)builder.GetBufferPointer(), (char *)builder.GetBufferPointer() + builder.GetSize());
 	builder.ReleaseBufferPointer();

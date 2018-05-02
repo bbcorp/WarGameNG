@@ -12,6 +12,7 @@ namespace engine
 	public:
 		Bullet(const WarGame::fb::bullet *bullet);
 		std::string encodeFlatBuf(void) const;
+		std::string encodeFlatBufDelete(void) const;
 		void calculateNextPixel(void);
 		flatbuffers::Offset<WarGame::fb::bullet> returnStructFbBullet(flatbuffers::FlatBufferBuilder *builder);
 

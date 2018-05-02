@@ -34,12 +34,24 @@ engine::Bullet::Bullet(const WarGame::fb::bullet *bullet) : m_id(bullet->id()), 
 
 }
 
+bool engine::Bullet::operator==(Bullet const &Bulletb)
+{
+	return m_id == Bulletb.m_id
+		&& m_ownerId == Bulletb.m_ownerId
+		&& m_src_x == Bulletb.m_src_x
+		&& m_src_y == Bulletb.m_src_y
+		&& m_dst_x == Bulletb.m_dst_x
+		&& m_dst_y == Bulletb.m_dst_y
+		&& m_w == Bulletb.m_w
+		&& m_h == Bulletb.m_h;
+}
+
 using namespace WarGame::fb;
 
 string engine::Bullet::encodeFlatBuf(void) const
 {
 	flatbuffers::FlatBufferBuilder builder;
-	auto bullet = Createbullet(builder, m_id, m_ownerId, m_src_x, m_src_x, m_dst_x, m_dst_y, m_w, m_h);
+	auto bullet = Createbullet(builder, m_id, m_ownerId, m_src_x, m_src_y, m_dst_x, m_dst_y, m_w, m_h);
 	FinishbulletBuffer(builder, bullet);
 	std::string buffer((char *)builder.GetBufferPointer(), (char *)builder.GetBufferPointer() + builder.GetSize());
 	builder.ReleaseBufferPointer();

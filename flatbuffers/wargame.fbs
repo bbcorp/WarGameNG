@@ -1,0 +1,48 @@
+// FlatBuffers WarGame
+namespace WarGame.fb;
+
+struct s_vector2u {
+	x:ulong;
+	y:ulong;
+}
+table playerBase {
+	name:string;
+	id:uint16;
+	health:uint16;
+	ammo:uint16;
+	orientation:uint16;
+	state:uint16;
+	pos:s_vector2u;
+}
+
+table players {
+	vecPlayers:[playerBase];
+}
+
+table requestId {
+	newId:int16;
+	name:string;
+	newX:uint16;
+	newY:uint16;
+}
+table bullet {
+	id:uint16;
+	ownerId:uint16;
+	src_x:uint16;
+	src_y:uint16;
+	dst_x:uint16;
+	dst_y:uint16;
+	w:uint16;
+	h:uint16;
+}
+
+table deleteBullet {
+	id:uint16;
+	ownerId:uint16;
+}
+
+table bullets {
+	vecBullets:[bullet];
+}
+
+root_type playerBase;

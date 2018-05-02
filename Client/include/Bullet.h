@@ -12,6 +12,7 @@ namespace engine
 	public:
 		Bullet(uint16_t src_x, uint16_t src_y, uint16_t dst_x, uint16_t dst_y, uint16_t ownerId);
 		Bullet(const WarGame::fb::bullet *bullet);
+		bool operator==(Bullet const& Bulletb);
 		std::string encodeFlatBuf(void) const;
 		static uint16_t getCurrentId(void);
 		uint16_t m_id;

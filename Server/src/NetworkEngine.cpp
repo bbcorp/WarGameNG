@@ -19,6 +19,7 @@
 #include "../../Client/include/wargame_generated.h"
 #include "../include/Logger.h"
 #include "../include/ft_Delay.h"
+#include "../include/Map.h"
 #include <iostream>
 #include <thread>
 #include <stdlib.h>
@@ -26,21 +27,33 @@
 using namespace std;
 using asio::ip::udp;
 
-engine::Network::Network()
+engine::Network::Network() : m_socket(nullptr), m_thread_check_bullet_collision(nullptr), m_thread_player_timeout(nullptr)
 {
 	memset(m_buffer, 0, MAX_BUFFER);
 	m_socket = new udp::socket(m_io_service, udp::endpoint(udp::v4(), PORT));
+#ifdef NDEBUG
 	m_thread_player_timeout = new thread(&engine::Network::checkPlayerTimeout, this);
+#endif // NDEBUG
 	m_thread_check_bullet_collision = new thread(&engine::Network::checkBulletCollision, this);
+	engine::Map::constructMapRects();
 }
 engine::Network::~Network()
 {
-	m_thread_player_timeout->join();
-	delete m_thread_player_timeout;
-	m_thread_check_bullet_collision->join();
-	delete m_thread_check_bullet_collision;
-	m_socket->close();
-	delete m_socket;
+	if (m_thread_check_bullet_collision != nullptr)
+	{
+		m_thread_player_timeout->join();
+		delete m_thread_player_timeout;
+	}
+	if (m_thread_player_timeout != nullptr)
+	{
+		m_thread_check_bullet_collision->join();
+		delete m_thread_check_bullet_collision;
+	}
+	if (m_socket != nullptr)
+	{
+		m_socket->close();
+		delete m_socket;
+	}
 }
 
 void engine::Network::receiveLoop(void)
@@ -78,20 +91,20 @@ bool engine::Network::decodeFlatBuf(size_t receiveLength)
 	if (VerifyrequestIdBuffer(verifier))
 	{
 		auto request = flatbuffers::GetRoot<requestId>(m_buffer);
-		if (request->newid() == -1)
+		if (request->newId() == -1)
 		{
 			flatbuffers::FlatBufferBuilder builder;
 			uint16_t newID(m_Players.size());
-			string name(request->name()->data());
-			auto requestAnswer = CreaterequestIdDirect(builder, newID, name.data());
+			sf::Vector2u newPos(engine::Map::getSpawn());
+			auto requestAnswer = CreaterequestIdDirect(builder, newID, request->name()->data(), newPos.x, newPos.y);
 			FinishrequestIdBuffer(builder, requestAnswer);
 			std::string send_buffer((char *)builder.GetBufferPointer(), (char *)builder.GetBufferPointer() + builder.GetSize());
 			builder.ReleaseBufferPointer();
 			m_socket->send_to(asio::buffer(send_buffer), m_sender_enpoint);
 			sendPlayersToClient(&m_sender_enpoint);
-			string message(request->name()->data());
-			message += " has connected!";
-			engine::Logger::log(message, 0);
+			stringstream message(request->name()->data());
+			message << " has connected with " << newPos.x << "," << newPos.y << " position";
+			engine::Logger::log(message.str(), 0);
 		}
 		
 	}
@@ -134,26 +147,26 @@ bool engine::Network::storePlayer(PlayerBase *Player)
 			else if (m_Players.at(i).m_sender_enpoint == m_sender_enpoint && m_Players.at(i) != *Player) // Player exists but data has changed.
 			{
 				m_Players.at(i) = *Player;
-				sendPlayerToAllClients(Player);
+				sendPlayerToAllClients(Player, 0);
 				return true;
 			}
 		}
 		m_Players.push_back(*Player); // Player doesn't exist at all.
-		sendPlayerToAllClients(Player);
+		sendPlayerToAllClients(Player, 0);
 		//sendPlayers();
 		return true;
 	}
 }
 
-size_t engine::Network::sendPlayerToAllClients(PlayerBase *Player)
+size_t engine::Network::sendPlayerToAllClients(PlayerBase *Player, bool playerHasChanged)
 {
 	if (m_Players.size() == 1)
 		return false; // Do not send if there's only one player, this is pointless !
 	size_t sendLength(0);
 	for (vector<PlayerBase>::iterator player = m_Players.begin(); player != m_Players.end(); player++)
 	{
-		if (*player == *Player)
-			continue; // Do not send to ourself !
+		if (*player == *Player && !playerHasChanged)
+			continue; // Do not send to ourself !*/
 		sendLength += m_socket->send_to(asio::buffer(Player->encodeFlatBuf()), player->m_sender_enpoint);
 	}
 	return sendLength;
@@ -166,11 +179,11 @@ size_t engine::Network::sendPlayersToClient(asio::ip::udp::endpoint *endpoint)
 	flatbuffers::FlatBufferBuilder builder;
 	// Create a vector of players
 	vector<flatbuffers::Offset<playerBase>> vecStructFbPlayerBase;
-	for (uint16_t i = 0; i < m_Players.size(); i++)
+	for (vector<PlayerBase>::iterator player = m_Players.begin(); player != m_Players.end(); player++)
 	{
-		if (m_Players.at(i).m_sender_enpoint == *endpoint)
+		if (player->m_sender_enpoint == *endpoint)
 			continue; // Do not store if it's ourself !!
-		vecStructFbPlayerBase.push_back(m_Players.at(i).returnStructFbPlayerbase(&builder));
+		vecStructFbPlayerBase.push_back(player->returnStructFbPlayerbase(&builder));
 	}
 	// Close builder
 	auto players = Createplayers(builder, builder.CreateVector<flatbuffers::Offset<playerBase>>(vecStructFbPlayerBase));
@@ -186,13 +199,15 @@ void engine::Network::checkPlayerTimeout(void)
 {
 	while (true)
 	{
+		this_thread::sleep_for(100ms);
 		for (vector<PlayerBase>::iterator player = m_Players.begin(); player != m_Players.end(); player++)
 		{
 			if (engine::ft_Delay(&player->m_clock, sf::milliseconds(1000)))
 			{
 				engine::Logger::log(player->m_name + " has been disconnected, reason : timeout", 0);
-				if (player != m_Players.end())
-					player = m_Players.erase(player);
+				player = m_Players.erase(player);
+				if (player == m_Players.end())
+					break;
 			}
 		}
 	}
@@ -200,51 +215,76 @@ void engine::Network::checkPlayerTimeout(void)
 
 void engine::Network::checkBulletCollision(void)
 {
-	/*sf::FloatRect tempPlayer;
-	sf::FloatRect tempBullet;*/
-
-	flatbuffers::FlatBufferBuilder builder;
-	// Create a vector of bullets
-	vector<flatbuffers::Offset<bullet>> vecStructFbBullet;
-
-
+	sf::FloatRect tempPlayer;
+	sf::FloatRect tempBullet;
 	while (true)
 	{
-		uint16_t i(0);
-		for (vector<Bullet>::iterator bullet = m_Bullets.begin(); bullet != m_Bullets.end(); bullet++)
+		if (m_Bullets.size() > 0)
 		{
-			bullet->calculateNextPixel();
-			vecStructFbBullet.push_back(bullet->returnStructFbBullet(&builder));
-			i++;
-			//tempBullet = sf::FloatRect(bullet->m_src_x, bullet->m_src_x, bullet->m_w, bullet->m_h);
-			/*for (vector<PlayerBase>::iterator j = m_Players.begin(); j != m_Players.end(); j++)
+			flatbuffers::FlatBufferBuilder builder;
+			// Create a vector of bullets
+			vector<flatbuffers::Offset<bullet>> vecStructFbBullet;
+			uint16_t i(0);
+			for (vector<Bullet>::iterator bullet = m_Bullets.begin(); bullet != m_Bullets.end(); bullet++)
 			{
-				tempPlayer = sf::FloatRect(j->m_pos.x, j->m_pos.y, 30, 30);
-
-				if (bullet->m_ownerId != j->m_id && tempBullet.intersects(tempPlayer))
+				bullet->calculateNextPixel();
+				i++;
+				tempBullet = sf::FloatRect(bullet->m_src_x, bullet->m_src_y, bullet->m_w, bullet->m_h);
+				if (engine::Map::mapIntersection(&tempBullet))
 				{
-					j->receiveDamage(10);
-					i = m_Bullets.erase(i);
-					vector<Bullet>::iterator temp_i(m_Bullets.erase(i));
-					if (temp_i != m_Bullets.end())
-						i = temp_i;
-					sendPlayerToAllClients(&(*j));
+					sendMessageToAllClients(&bullet->encodeFlatBufDelete());
+					bullet = m_Bullets.erase(bullet);
+					if (bullet == m_Bullets.end())
+						break;
 				}
-			}*/
+				for (vector<PlayerBase>::iterator player = m_Players.begin(); player != m_Players.end(); player++)
+				{
+					tempPlayer = sf::FloatRect(player->m_pos.x, player->m_pos.y, 30, 30);
+					if (bullet->m_ownerId != player->m_id && tempBullet.intersects(tempPlayer))
+					{
+						player->receiveDamage(10);
+						sendPlayerToAllClients(&*player, 1);
+						sendMessageToAllClients(&bullet->encodeFlatBufDelete());
+						bullet = m_Bullets.erase(bullet);
+						break;
+					}
+				}
+				if (bullet == m_Bullets.end())
+					break;
+				vecStructFbBullet.push_back(bullet->returnStructFbBullet(&builder));
+				//tempBullet = sf::FloatRect(bullet->m_src_x, bullet->m_src_x, bullet->m_w, bullet->m_h);
+				/*for (vector<PlayerBase>::iterator j = m_Players.begin(); j != m_Players.end(); j++)
+				{
+					tempPlayer = sf::FloatRect(j->m_pos.x, j->m_pos.y, 30, 30);
+
+					if (bullet->m_ownerId != j->m_id && tempBullet.intersects(tempPlayer))
+					{
+						j->receiveDamage(10);
+						i = m_Bullets.erase(i);
+						vector<Bullet>::iterator temp_i(m_Bullets.erase(i));
+						if (temp_i != m_Bullets.end())
+							i = temp_i;
+						sendPlayerToAllClients(&(*j));
+					}
+				}*/
+			}
+			// Close builder
+			if (vecStructFbBullet.size() > 0)
+			{
+				auto bullets = Createbullets(builder, builder.CreateVector<flatbuffers::Offset<bullet>>(vecStructFbBullet));
+				FinishbulletsBuffer(builder, bullets);
+				// Store to buffer
+				std::string send_buffer((char *)builder.GetBufferPointer(), (char *)builder.GetBufferPointer() + builder.GetSize());
+				builder.ReleaseBufferPointer();
+				// Send to all clients
+				sendMessageToAllClients(&send_buffer);
+			}
 		}
-		// Close builder
-		auto bullets = Createbullets(builder, builder.CreateVector<flatbuffers::Offset<bullet>>(vecStructFbBullet));
-		FinishbulletsBuffer(builder, bullets);
-		// Store to buffer
-		std::string send_buffer((char *)builder.GetBufferPointer(), (char *)builder.GetBufferPointer() + builder.GetSize());
-		builder.ReleaseBufferPointer();
-		// Send to all clients
-		sendBulletsToAllClients(&send_buffer);
 		this_thread::sleep_for(10ms);
 	}
 }
 
-size_t engine::Network::sendBulletsToAllClients(string *buffer)
+size_t engine::Network::sendMessageToAllClients(string *buffer)
 {
 	size_t sendLength(0);
 	for (vector<PlayerBase>::iterator player = m_Players.begin(); player != m_Players.end(); player++)

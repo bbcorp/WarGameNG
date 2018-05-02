@@ -16,10 +16,11 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 
 #include "../include/MainPlayer.h"
+#include <iostream>
 
 using namespace std;
 
-MainPlayer::MainPlayer() : Player(), m_PlayerViewRect(400, 500, 800, 600)
+MainPlayer::MainPlayer() : Player(), m_PlayerViewRect(0, 0, 800, 600)
 {
 	m_sprite.setTextureRect({ 1, 1, 32, 32 });
 	m_sprite.setPosition({ (float)m_pos.x, (float)m_pos.y });
@@ -35,7 +36,7 @@ MainPlayer::MainPlayer() : Player(), m_PlayerViewRect(400, 500, 800, 600)
 	m_wallRects.push_back(wallDown);
 }
 
-MainPlayer::MainPlayer(string name) : Player(name), m_PlayerViewRect(400, 500, 800, 600)
+MainPlayer::MainPlayer(string name) : Player(name), m_PlayerViewRect(0, 0, 800, 600)
 {
 	m_sprite.setTextureRect({ 1, 1, 32, 32 });
 	m_sprite.setPosition({ (float)m_pos.x, (float)m_pos.y });
@@ -56,14 +57,19 @@ void MainPlayer::move(int16_t x, int16_t y)
 	if (checkWallsCollision(x, y) || checkPlayersCollision(x, y))
 		return;
 	m_sprite.move(x, y);
-	nearWallMode(x, y);
+	nearWallModeMove(x, y);
 	m_pos.x += x;
 	m_pos.y += y;
 }
 
 void MainPlayer::fire(uint16_t x, uint16_t y)
 {
-	engine::Bullet o_bullet(m_pos.x, m_pos.y, m_PlayerViewRect.left + x, m_PlayerViewRect.top + y, m_id);
+	sf::Vector2f view(m_PlayerView.getCenter());
+	view.x -= m_PlayerViewRect.width / 2;
+	view.y -= m_PlayerViewRect.height / 2;
+	uint16_t mousePosX(x + view.x);
+	uint16_t mousePosY(y + view.y);
+	engine::Bullet o_bullet(m_pos.x + 16, m_pos.y + 16, mousePosX, mousePosY, m_id);
 	m_bulletQueue.push_back(o_bullet);
 }
 
@@ -89,7 +95,7 @@ bool MainPlayer::checkPlayersCollision(int16_t x, int16_t y)
 	return false;
 }
 
-void MainPlayer::nearWallMode(int16_t x, int16_t y)
+void MainPlayer::nearWallModeMove(int16_t x, int16_t y)
 {
 	uint16_t wallPositionTmp1 = 0;
 	uint16_t wallPositionTmp2 = 0;
@@ -111,4 +117,30 @@ void MainPlayer::nearWallMode(int16_t x, int16_t y)
 		m_PlayerView.move(0, y);
 	else
 		return;
+}
+
+uint16_t MainPlayer::nearWallMode(void)
+{
+	uint16_t wallPositionTmp1 = 0;
+	uint16_t wallPositionTmp2 = 0;
+	uint16_t wallPosition = 0;
+	for (uint16_t i = 0; i < m_wallRects.size(); i++)
+	{
+		if (m_wallRects.at(i).intersects(sf::FloatRect(sf::Vector2f(m_pos), sf::Vector2f(32.0, 32.0))) && !(i % 2))
+			wallPositionTmp1 = WALL_LEFTRIGHT;
+		else if (m_wallRects.at(i).intersects(sf::FloatRect(sf::Vector2f(m_pos), sf::Vector2f(32.0, 32.0))) && i % 2)
+			wallPositionTmp2 = WALL_UPDOWN;
+	}
+	wallPosition = wallPositionTmp1 + wallPositionTmp2;
+	return wallPosition;
+}
+
+void MainPlayer::updatePosition(uint16_t x, uint16_t y)
+{
+	m_pos.x = x;
+	m_pos.y = y;
+	m_sprite.setPosition({ (float)m_pos.x, (float)m_pos.y });
+	m_PlayerViewRect.left = x - m_PlayerViewRect.width / 2 + 16;
+	m_PlayerViewRect.top = y - m_PlayerViewRect.height / 2 + 16;
+	m_PlayerView.reset(m_PlayerViewRect);
 }

@@ -19,6 +19,8 @@ namespace WarGame {
 
 		struct bullet;
 
+		struct deleteBullet;
+
 		struct bullets;
 
 		MANUALLY_ALIGNED_STRUCT(8) s_vector2u FLATBUFFERS_FINAL_CLASS {
@@ -217,19 +219,29 @@ namespace WarGame {
 		struct requestId FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 			enum {
 				VT_NEWID = 4,
-				VT_NAME = 6
+				VT_NAME = 6,
+				VT_NEWX = 8,
+				VT_NEWY = 10
 			};
-			int16_t newid() const {
+			int16_t newId() const {
 				return GetField<int16_t>(VT_NEWID, 0);
 			}
 			const flatbuffers::String *name() const {
 				return GetPointer<const flatbuffers::String *>(VT_NAME);
+			}
+			uint16_t newX() const {
+				return GetField<uint16_t>(VT_NEWX, 0);
+			}
+			uint16_t newY() const {
+				return GetField<uint16_t>(VT_NEWY, 0);
 			}
 			bool Verify(flatbuffers::Verifier &verifier) const {
 				return VerifyTableStart(verifier) &&
 					VerifyField<int16_t>(verifier, VT_NEWID) &&
 					VerifyOffset(verifier, VT_NAME) &&
 					verifier.Verify(name()) &&
+					VerifyField<uint16_t>(verifier, VT_NEWX) &&
+					VerifyField<uint16_t>(verifier, VT_NEWY) &&
 					verifier.EndTable();
 			}
 		};
@@ -237,11 +249,17 @@ namespace WarGame {
 		struct requestIdBuilder {
 			flatbuffers::FlatBufferBuilder &fbb_;
 			flatbuffers::uoffset_t start_;
-			void add_newid(int16_t newid) {
-				fbb_.AddElement<int16_t>(requestId::VT_NEWID, newid, 0);
+			void add_newId(int16_t newId) {
+				fbb_.AddElement<int16_t>(requestId::VT_NEWID, newId, 0);
 			}
 			void add_name(flatbuffers::Offset<flatbuffers::String> name) {
 				fbb_.AddOffset(requestId::VT_NAME, name);
+			}
+			void add_newX(uint16_t newX) {
+				fbb_.AddElement<uint16_t>(requestId::VT_NEWX, newX, 0);
+			}
+			void add_newY(uint16_t newY) {
+				fbb_.AddElement<uint16_t>(requestId::VT_NEWY, newY, 0);
 			}
 			explicit requestIdBuilder(flatbuffers::FlatBufferBuilder &_fbb)
 				: fbb_(_fbb) {
@@ -257,22 +275,30 @@ namespace WarGame {
 
 		inline flatbuffers::Offset<requestId> CreaterequestId(
 			flatbuffers::FlatBufferBuilder &_fbb,
-			int16_t newid = 0,
-			flatbuffers::Offset<flatbuffers::String> name = 0) {
+			int16_t newId = 0,
+			flatbuffers::Offset<flatbuffers::String> name = 0,
+			uint16_t newX = 0,
+			uint16_t newY = 0) {
 			requestIdBuilder builder_(_fbb);
 			builder_.add_name(name);
-			builder_.add_newid(newid);
+			builder_.add_newY(newY);
+			builder_.add_newX(newX);
+			builder_.add_newId(newId);
 			return builder_.Finish();
 		}
 
 		inline flatbuffers::Offset<requestId> CreaterequestIdDirect(
 			flatbuffers::FlatBufferBuilder &_fbb,
-			int16_t newid = 0,
-			const char *name = nullptr) {
+			int16_t newId = 0,
+			const char *name = nullptr,
+			uint16_t newX = 0,
+			uint16_t newY = 0) {
 			return WarGame::fb::CreaterequestId(
 				_fbb,
-				newid,
-				name ? _fbb.CreateString(name) : 0);
+				newId,
+				name ? _fbb.CreateString(name) : 0,
+				newX,
+				newY);
 		}
 
 		struct bullet FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -385,6 +411,56 @@ namespace WarGame {
 			return builder_.Finish();
 		}
 
+		struct deleteBullet FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+			enum {
+				VT_ID = 4,
+				VT_OWNERID = 6
+			};
+			uint16_t id() const {
+				return GetField<uint16_t>(VT_ID, 0);
+			}
+			uint16_t ownerId() const {
+				return GetField<uint16_t>(VT_OWNERID, 0);
+			}
+			bool Verify(flatbuffers::Verifier &verifier) const {
+				return VerifyTableStart(verifier) &&
+					VerifyField<uint16_t>(verifier, VT_ID) &&
+					VerifyField<uint16_t>(verifier, VT_OWNERID) &&
+					verifier.EndTable();
+			}
+		};
+
+		struct deleteBulletBuilder {
+			flatbuffers::FlatBufferBuilder &fbb_;
+			flatbuffers::uoffset_t start_;
+			void add_id(uint16_t id) {
+				fbb_.AddElement<uint16_t>(deleteBullet::VT_ID, id, 0);
+			}
+			void add_ownerId(uint16_t ownerId) {
+				fbb_.AddElement<uint16_t>(deleteBullet::VT_OWNERID, ownerId, 0);
+			}
+			explicit deleteBulletBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+				: fbb_(_fbb) {
+				start_ = fbb_.StartTable();
+			}
+			deleteBulletBuilder &operator=(const deleteBulletBuilder &);
+			flatbuffers::Offset<deleteBullet> Finish() {
+				const auto end = fbb_.EndTable(start_);
+				auto o = flatbuffers::Offset<deleteBullet>(end);
+				return o;
+			}
+		};
+
+		inline flatbuffers::Offset<deleteBullet> CreatedeleteBullet(
+			flatbuffers::FlatBufferBuilder &_fbb,
+			uint16_t id = 0,
+			uint16_t ownerId = 0) {
+			deleteBulletBuilder builder_(_fbb);
+			builder_.add_ownerId(ownerId);
+			builder_.add_id(id);
+			return builder_.Finish();
+		}
+
 		struct bullets FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 			enum {
 				VT_VECBULLETS = 4
@@ -455,6 +531,10 @@ namespace WarGame {
 			return flatbuffers::GetRoot<WarGame::fb::bullets>(buf);
 		}
 
+		inline const WarGame::fb::deleteBullet *GetdeleteBullet(const void *buf) {
+			return flatbuffers::GetRoot<WarGame::fb::deleteBullet>(buf);
+		}
+
 		inline const char *playerBaseIdentifier() {
 			return "PLAY";
 		}
@@ -473,6 +553,10 @@ namespace WarGame {
 
 		inline const char *bulletsIdentifier() {
 			return "BULS";
+		}
+
+		inline const char *deleteBulletIdentifier() {
+			return "DBUL";
 		}
 
 		inline bool playerBaseBufferHasIdentifier(const void *buf) {
@@ -500,6 +584,12 @@ namespace WarGame {
 				buf, bulletsIdentifier());
 		}
 
+		inline bool deleteBulletBufferHasIdentifier(const void *buf) {
+			return flatbuffers::BufferHasIdentifier(
+				buf, deleteBulletIdentifier());
+		}
+
+
 		inline bool VerifyplayerBaseBuffer(
 			flatbuffers::Verifier &verifier) {
 			return verifier.VerifyBuffer<WarGame::fb::playerBase>(playerBaseIdentifier());
@@ -523,6 +613,11 @@ namespace WarGame {
 		inline bool VerifybulletsBuffer(
 			flatbuffers::Verifier &verifier) {
 			return verifier.VerifyBuffer<WarGame::fb::bullets>(bulletsIdentifier());
+		}
+
+		inline bool VerifydeleteBulletBuffer(
+			flatbuffers::Verifier &verifier) {
+			return verifier.VerifyBuffer<WarGame::fb::deleteBullet>(deleteBulletIdentifier());
 		}
 
 		inline void FinishplayerBaseBuffer(
@@ -553,6 +648,12 @@ namespace WarGame {
 			flatbuffers::FlatBufferBuilder &fbb,
 			flatbuffers::Offset<WarGame::fb::bullets> root) {
 			fbb.Finish(root, bulletsIdentifier());
+		}
+
+		inline void FinishdeleteBulletBuffer(
+			flatbuffers::FlatBufferBuilder &fbb,
+			flatbuffers::Offset<WarGame::fb::deleteBullet> root) {
+			fbb.Finish(root, deleteBulletIdentifier());
 		}
 
 	}  // namespace fb

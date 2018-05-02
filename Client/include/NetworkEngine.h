@@ -26,6 +26,10 @@ namespace engine
 
 	private:
 		bool requestIdTry(MainPlayer *o_MainPlayer, const uint16_t retryTimes);
+		bool processplayerBaseBuffer(void);
+		bool processplayersBuffer(void);
+		bool processbulletsBuffer(void);
+		bool processdeleteBulletBuffer(void);
 		void sendPlayerData(void);
 		void sendPlayerBullets(void);
 

@@ -24,9 +24,9 @@ namespace engine
 	private:
 		bool decodeFlatBuf(size_t receiveLength);
 		bool storePlayer(PlayerBase *Player);
-		size_t sendPlayerToAllClients(PlayerBase *Player);
+		size_t sendPlayerToAllClients(PlayerBase *Player, bool playerHasChanged);
 		size_t sendPlayersToClient(asio::ip::udp::endpoint *endpoint);
-		size_t sendBulletsToAllClients(std::string *buffer);
+		size_t sendMessageToAllClients(std::string *buffer);
 		void checkPlayerTimeout(void);
 		void checkBulletCollision(void);
 

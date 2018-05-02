@@ -1,6 +1,7 @@
 # We want recent cmake version
 cmake_minimum_required(VERSION 3.0)
 
+enable_language(CXX)
 project(WarGameNG)
 if (UNIX)
 	add_definitions(-fpermissive)

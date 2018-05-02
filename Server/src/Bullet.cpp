@@ -39,23 +39,36 @@ string engine::Bullet::encodeFlatBuf(void) const
 	return buffer;
 }
 
+string engine::Bullet::encodeFlatBufDelete(void) const
+{
+	flatbuffers::FlatBufferBuilder builder;
+	auto deleteBullet = CreatedeleteBullet(builder, m_id, m_ownerId);
+	FinishdeleteBulletBuffer(builder, deleteBullet);
+	std::string buffer((char *)builder.GetBufferPointer(), (char *)builder.GetBufferPointer() + builder.GetSize());
+	builder.ReleaseBufferPointer();
+	return buffer;
+}
+
 void engine::Bullet::calculateNextPixel(void)
 {
-	if (m_err > -m_dX)
+	for (uint16_t i = 0; i < 4; i++)
 	{
-		m_err -= m_dY;
-		m_src_x += m_sX;
-	}
-	if (m_err < m_dY)
-	{
-		m_err += m_dX;
-		m_src_y += m_sY;
+		if (m_err > -m_dX)
+		{
+			m_err -= m_dY;
+			m_src_x += m_sX;
+		}
+		if (m_err < m_dY)
+		{
+			m_err += m_dX;
+			m_src_y += m_sY;
+		}
 	}
 }
 
 
 flatbuffers::Offset<WarGame::fb::bullet> engine::Bullet::returnStructFbBullet(flatbuffers::FlatBufferBuilder *builder)
 {
-	flatbuffers::Offset<WarGame::fb::bullet> bullet = Createbullet(*builder, m_id, m_ownerId, m_src_x, m_src_y, m_dst_x, m_dst_y, m_w, m_h);
+	auto bullet = Createbullet(*builder, m_id, m_ownerId, m_src_x, m_src_y, m_dst_x, m_dst_y, m_w, m_h);
 	return bullet;
 }

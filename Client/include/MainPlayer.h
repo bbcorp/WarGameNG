@@ -18,6 +18,7 @@ public:
 	MainPlayer(std::string name);
 	void move(int16_t x, int16_t y);
 	void fire(uint16_t x, uint16_t y);
+	void updatePosition(uint16_t x, uint16_t y);
 
 	sf::View m_PlayerView;
 	std::vector<Player> m_ennemiesPlayers;
@@ -25,7 +26,8 @@ public:
 	std::vector<engine::Bullet> m_bullets;
 
 private:
-	void nearWallMode(int16_t x, int16_t y);
+	void nearWallModeMove(int16_t x, int16_t y);
+	uint16_t nearWallMode(void);
 	bool checkWallsCollision(int16_t x, int16_t y);
 	bool checkPlayersCollision(int16_t x, int16_t y);
 

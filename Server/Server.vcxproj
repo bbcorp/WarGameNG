@@ -23,6 +23,7 @@
     <ClCompile Include="src\ft_Delay.cpp" />
     <ClCompile Include="src\Logger.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\NetworkEngine.cpp" />
     <ClCompile Include="src\PlayerBase.cpp" />
   </ItemGroup>
@@ -31,6 +32,7 @@
     <ClInclude Include="include\Bullet.h" />
     <ClInclude Include="include\ft_Delay.h" />
     <ClInclude Include="include\Logger.h" />
+    <ClInclude Include="include\Map.h" />
     <ClInclude Include="include\NetworkEngine.h" />
     <ClInclude Include="include\PlayerBase.h" />
   </ItemGroup>
