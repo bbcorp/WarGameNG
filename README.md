@@ -1,5 +1,5 @@
-# WarGame
-[![pipeline status](https://git.chunkz.net/WarGame/WarGameNG/badges/master/pipeline.svg)](https://git.chunkz.net/WarGame/WarGame/commits/master)
+# WarGameNG
+[![pipeline status](https://git.chunkz.net/WarGame/WarGameNG/badges/master/pipeline.svg)](https://git.chunkz.net/WarGame/WarGameNG/commits/master)
 
 Work in progress
 
