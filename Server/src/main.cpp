@@ -36,8 +36,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	static engine::Network NetworkEngine;
-	NetworkEngine.receiveLoop();
+	engine::Network::getInstance();
 		
 	return EXIT_SUCCESS;
 }

@@ -18,11 +18,14 @@ namespace engine
 	class Network
 	{
 	public:
-		Network();
-		virtual ~Network();
-		void receiveLoop(void);
+		Network(Network const&) = delete;
+		void operator=(Network const&) = delete;
+		static Network& getInstance();
 
 	private:
+		Network();
+		~Network();
+		void receiveLoop(void);
 		bool decodeFlatBuf(size_t receiveLength);
 		bool storePlayer(PlayerBase *Player);
 		size_t sendPlayerToAllClients(PlayerBase *Player, bool playerHasChanged);

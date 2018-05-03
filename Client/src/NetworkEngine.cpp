@@ -32,6 +32,13 @@ engine::Network::Network(const string address, engine::Game *GameEngine) : m_rec
 	m_thread_streamMainPlayerData = new thread(&engine::Network::streamMainPlayerData, this);
 	m_thread_receiveLoop = new thread(&engine::Network::receiveLoop, this);
 }
+
+engine::Network& engine::Network::getInstance(string address, engine::Game *GameEngine)
+{
+	static Network instance(address, GameEngine);
+	return instance;
+}
+
 engine::Network::~Network()
 {
 	if (m_socket != nullptr)

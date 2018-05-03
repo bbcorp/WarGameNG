@@ -36,7 +36,9 @@ engine::Network::Network() : m_socket(nullptr), m_thread_player_timeout(nullptr)
 #endif // NDEBUG
 	m_thread_check_bullet_collision = new thread(&engine::Network::processBullets, this);
 	engine::Map::getInstance();
+	receiveLoop();
 }
+
 engine::Network::~Network()
 {
 	if (m_thread_check_bullet_collision != nullptr)
@@ -54,6 +56,12 @@ engine::Network::~Network()
 		m_socket->close();
 		delete m_socket;
 	}
+}
+
+engine::Network& engine::Network::getInstance()
+{
+	static Network instance;
+	return instance;
 }
 
 void engine::Network::receiveLoop(void)

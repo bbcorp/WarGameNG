@@ -17,15 +17,18 @@ namespace engine
 	class Network
 	{
 	public:
-		Network(const std::string address, engine::Game *GameEngine);
-		virtual ~Network();
+		Network(Network const&) = delete;
+		void operator=(Network const&) = delete;
+		static Network& getInstance(std::string address, engine::Game *GameEngine);
 		size_t sendData(std::string *send_buffer);
+
+	private:
+		Network(const std::string address, engine::Game *GameEngine);
+		~Network();
+		bool requestIdTry(MainPlayer *o_MainPlayer, const uint16_t retryTimes);
 		void streamMainPlayerData(void);
 		void receiveLoop(void);
 		bool decodeFlatBuf(size_t receiveLength);
-
-	private:
-		bool requestIdTry(MainPlayer *o_MainPlayer, const uint16_t retryTimes);
 		bool processplayerBaseBuffer(void);
 		bool processplayersBuffer(void);
 		bool processbulletsBuffer(void);

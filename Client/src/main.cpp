@@ -39,7 +39,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	static engine::Game EngineGame((uint16_t) 800, (uint16_t) 600);
-	static engine::Network EngineNetwork("127.0.0.1", &EngineGame);
+	engine::Network::getInstance("127.0.0.1", &EngineGame);
 
 	EngineGame.sfmlRender();
 
