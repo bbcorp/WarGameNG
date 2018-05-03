@@ -29,7 +29,7 @@ engine::Game::Game(uint16_t width, uint16_t height) : m_ennemiesCount(0), m_wind
 {
 	m_MainPlayer.m_name = "bbcorp";
 	sfmlInit();
-	engine::Map::constructMapRects();
+	engine::Map::getInstance();
 }
 
 engine::Game::~Game()

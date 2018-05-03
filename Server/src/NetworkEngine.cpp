@@ -35,7 +35,7 @@ engine::Network::Network() : m_socket(nullptr), m_thread_player_timeout(nullptr)
 	m_thread_player_timeout = new thread(&engine::Network::checkPlayerTimeout, this);
 #endif // NDEBUG
 	m_thread_check_bullet_collision = new thread(&engine::Network::processBullets, this);
-	engine::Map::constructMapRects();
+	engine::Map::getInstance();
 }
 engine::Network::~Network()
 {
@@ -206,7 +206,7 @@ void engine::Network::checkPlayerTimeout(void)
 		{
 			if (engine::ft_Delay(&player->m_clock, sf::milliseconds(1000)))
 			{
-				engine::Logger::log(player->m_name + " has been disconnected, reason: timeout: " + to_string(player->m_clock.getElapsedTime().asMilliseconds()) + "ms", 0);
+				engine::Logger::log(player->m_name + " has been disconnected, reason: timeout.", 0);
 				player = m_Players.erase(player);
 				if (player == m_Players.end())
 					break;

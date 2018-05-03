@@ -27,11 +27,11 @@ engine::Map::Map()
 	constructMapRects();
 }
 
-engine::Map::Map(const string fileName)
+/*engine::Map::Map(const string fileName)
 {
 	//loadBmp(fileName);
 	constructMapRects();
-}
+}*/
 
 vector<uint8_t> engine::Map::loadBmp(const std::string filename)
 {
@@ -268,6 +268,12 @@ void engine::Map::constructMapRects(void)
 			break;
 		}
 	}*/
+}
+
+engine::Map& engine::Map::getInstance()
+{
+	static Map instance;
+	return instance;
 }
 
 const std::vector<sf::FloatRect> engine::Map::getWalls(void)

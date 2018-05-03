@@ -28,10 +28,10 @@ engine::Map::Map()
 	constructMapRects();
 }
 
-engine::Map::Map(const string fileName)
+engine::Map& engine::Map::getInstance()
 {
-	//loadBmp(fileName);
-	constructMapRects();
+	static Map instance;
+	return instance;
 }
 
 vector<uint8_t> engine::Map::loadBmp(const std::string filename)
