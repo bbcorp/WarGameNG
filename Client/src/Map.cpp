@@ -15,9 +15,11 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 
-#include "../include/Map.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include "../include/Map.h"
+#include "../include/GuiLogger.h"
 
 using namespace std;
 std::vector<sf::FloatRect> engine::Map::m_walls;
@@ -206,8 +208,9 @@ void engine::Map::constructMapRects(void)
 		}
 		
 	} while (m_walls.size() < lastSize); // While size of m_walls is reduced, continue
-
-	cout << "Loaded " << m_walls.size() << " elements in "<< clock.getElapsedTime().asMilliseconds() << "ms." << endl;
+	stringstream message;
+	message << "Map: Loaded " << m_walls.size() << " elements in " << clock.getElapsedTime().asMilliseconds() << "ms.";
+	engine::GuiLogger::getInstance().setMessage(message.str(), 0);
 	
 /*	while (true)
 	{

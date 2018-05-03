@@ -23,6 +23,7 @@
     <ClCompile Include="src\Event.cpp" />
     <ClCompile Include="src\ft_Delay.cpp" />
     <ClCompile Include="src\GameEngine.cpp" />
+    <ClCompile Include="src\GuiLogger.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MainPlayer.cpp" />
     <ClCompile Include="src\Map.cpp" />
@@ -36,6 +37,7 @@
     <ClInclude Include="include\Event.h" />
     <ClInclude Include="include\ft_Delay.h" />
     <ClInclude Include="include\GameEngine.h" />
+    <ClInclude Include="include\GuiLogger.h" />
     <ClInclude Include="include\MainPlayer.h" />
     <ClInclude Include="include\Map.h" />
     <ClInclude Include="include\NetworkEngine.h" />
@@ -157,10 +159,11 @@
       <AdditionalOptions>/wd4146</AdditionalOptions>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalOptions>/ENTRY:"mainCRTStartup" %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -175,10 +178,11 @@
       <AdditionalOptions>/wd4146</AdditionalOptions>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalOptions>/ENTRY:"mainCRTStartup" %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

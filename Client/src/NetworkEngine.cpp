@@ -18,6 +18,7 @@
 #include "../include/NetworkEngine.h"
 #include "../include/wargame_generated.h"
 #include "../include/ft_Delay.h"
+#include "../include/GuiLogger.h"
 #include <iostream>
 #include <stdlib.h>
 #include <thread>
@@ -69,7 +70,8 @@ void engine::Network::streamMainPlayerData(void)
 	MainPlayer lastMainPlayer;
 	sf::Clock clockPlayerData;
 
-	requestIdTry(&m_GameEngine->m_MainPlayer, 3);
+	if (requestIdTry(&m_GameEngine->m_MainPlayer, 3))
+		engine::GuiLogger::getInstance().setMessage("Connected to " + m_receiver_endpoint.address().to_string() + ":" + to_string(PORT), 0);
 
 	while (true)
 	{
@@ -139,6 +141,7 @@ bool engine::Network::requestIdTry(MainPlayer *o_MainPlayer, const uint16_t retr
 			{
 				string error("Server not answering: retry ");
 				error += to_string(i) + " of " + to_string(retryTimes);
+				engine::GuiLogger::getInstance().setMessage(error, 1);
 				throw runtime_error(error);
 			}
 		}

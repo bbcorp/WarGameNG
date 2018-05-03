@@ -110,8 +110,8 @@ bool engine::Network::decodeFlatBuf(size_t receiveLength)
 			builder.ReleaseBufferPointer();
 			m_socket->send_to(asio::buffer(send_buffer), m_sender_enpoint);
 			sendPlayersToClient(&m_sender_enpoint);
-			stringstream message(request->name()->data());
-			message << " has connected with " << newPos.x << "," << newPos.y << " position";
+			stringstream message;
+			message << request->name()->data() << " has connected with " << newPos.x << "," << newPos.y << " position";
 			engine::Logger::log(message.str(), 0);
 		}
 		

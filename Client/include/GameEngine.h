@@ -8,6 +8,7 @@
 #include "MainPlayer.h"
 #include "Map.h"
 #include "Event.h"
+#include "GuiLogger.h"
 
 namespace engine
 {
@@ -44,11 +45,13 @@ namespace engine
 		bool sfmlCleanup(void);
 		void drawWalls(void);
 		void drawBullets(void);
+		void drawMessage(void);
 
 		sf::RenderWindow *m_window;
 		uint16_t m_width;
 		uint16_t m_height;
 		std::vector<sf::Sprite*> m_spriteQueue;
+		engine::GuiLogger *m_GuiLogger;
 	};
 }
 #endif

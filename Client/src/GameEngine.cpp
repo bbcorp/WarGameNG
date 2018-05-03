@@ -25,14 +25,14 @@ using namespace std;
 
 sf::Texture *engine::Game::m_ennemy_texture(nullptr);
 
-engine::Game::Game(uint16_t width, uint16_t height) : m_ennemiesCount(0), m_window(nullptr), m_width(width), m_height(height)
+engine::Game::Game(uint16_t width, uint16_t height) : m_ennemiesCount(0), m_window(nullptr), m_width(width), m_height(height), m_GuiLogger(&engine::GuiLogger::getInstance())
 {
 	m_MainPlayer.m_name = "bbcorp";
 	sfmlInit();
 	engine::Map::getInstance();
 }
 
-engine::Game::Game() : m_ennemiesCount(0), m_window(nullptr), m_width(800), m_height(600)
+engine::Game::Game() : m_ennemiesCount(0), m_window(nullptr), m_width(800), m_height(600), m_GuiLogger(&engine::GuiLogger::getInstance())
 {
 	m_MainPlayer.m_name = "bbcorp";
 	sfmlInit();
@@ -64,7 +64,7 @@ bool engine::Game::sfmlCleanup(void)
 	if (m_window != nullptr)
 	{
 		delete m_window;
-		m_window = NULL;
+		m_window = nullptr;
 	}
 	return true;
 }
@@ -79,21 +79,15 @@ void engine::Game::sfmlCreateWindow(void)
 void engine::Game::sfmlRender(void)
 {
 	// création d'une vue à partir de la zone rectangulaire du monde 2D à voir
-	sf::View LastView = m_MainPlayer.m_PlayerView;
+	sf::View LastView(m_MainPlayer.m_PlayerView);
 	m_window->setView(m_MainPlayer.m_PlayerView);
 	uint16_t ennemiesCount(0);
 	engine::Event engineEvent(m_window, &m_MainPlayer);
-	sf::Font font;
-	if (!font.loadFromFile("../res/calibri.ttf"))
-		return;
-	sf::Text text;
-	text.setString("Bonjour !");
-	text.setCharacterSize(100);
-	text.setFillColor(sf::Color::Red);
 	while (m_window->isOpen())
 	{
 		engineEvent.handleEvents();
 		m_window->clear();
+		
 		if (m_MainPlayer.m_PlayerView.getCenter() != LastView.getCenter()) // If view has changed
 		{
 			m_window->setView(m_MainPlayer.m_PlayerView); // Set the new view
@@ -103,10 +97,11 @@ void engine::Game::sfmlRender(void)
 		{
 			sfmlLoadEnnemiesTexture("../res/ennemy.png", m_ennemiesCount);
 			ennemiesCount = m_ennemiesCount;
+			m_GuiLogger->setMessage(m_MainPlayer.m_ennemiesPlayers.back().m_name + " has joined", 0);
 		}
 		sfmlDisplaySprites();
-		m_window->draw(text);
 		drawBullets();
+		drawMessage();
 		//drawWalls();
 		m_window->display();
 			
@@ -161,6 +156,18 @@ void engine::Game::drawBullets(void)
 		m_window->draw(rect);
 	}
 	m_mutex.unlock();
+}
+
+void engine::Game::drawMessage(void)
+{
+	if (m_GuiLogger->getShowBoolean())
+	{
+		sf::Vector2f position(m_MainPlayer.m_PlayerView.getCenter());
+		position.x -= m_GuiLogger->getText()->getGlobalBounds().width / 2;
+		position.y -= m_height / 2;
+		m_GuiLogger->updatePosition(position);
+		m_window->draw(*m_GuiLogger->getText());
+	}
 }
 
 
