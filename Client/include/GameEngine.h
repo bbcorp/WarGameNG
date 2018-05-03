@@ -14,13 +14,12 @@ namespace engine
 	class Game
 	{
 	public:
-		Game(uint16_t width, uint16_t height);
-		~Game();
-		void sfmlInit(void);
-		bool sfmlCleanup(void);
-		void sfmlRender(void);
+		Game(Game const&) = delete;
+		void operator=(Game const&) = delete;
+		static Game& getInstance(void);
 		bool deleteSpriteFromQueue(sf::Sprite *o_sprite);
 		void addSpriteToQueue(sf::Sprite *o_sprite);
+		void sfmlRender(void);
 
 		static sf::Texture *m_ennemy_texture;
 		MainPlayer m_MainPlayer;
@@ -28,6 +27,11 @@ namespace engine
 		std::mutex m_mutex;
 
 	private:
+		Game(uint16_t width, uint16_t height);
+		Game();
+		~Game();
+
+		void sfmlInit(void);
 		void sfmlCreateWindow(void);
 		void sfmlDisplaySprites(void);
 		void sfmlLoadTexture(std::string fileName);
@@ -37,6 +41,7 @@ namespace engine
 		void EnnemiesPlayersUpdateState(void);
 		void sfmlLoadAllTextures(void);
 		void sfmlDestroyTextures(void);
+		bool sfmlCleanup(void);
 		void drawWalls(void);
 		void drawBullets(void);
 

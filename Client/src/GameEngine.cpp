@@ -32,9 +32,22 @@ engine::Game::Game(uint16_t width, uint16_t height) : m_ennemiesCount(0), m_wind
 	engine::Map::getInstance();
 }
 
+engine::Game::Game() : m_ennemiesCount(0), m_window(nullptr), m_width(800), m_height(600)
+{
+	m_MainPlayer.m_name = "bbcorp";
+	sfmlInit();
+	engine::Map::getInstance();
+}
+
 engine::Game::~Game()
 {
 	sfmlCleanup();
+}
+
+engine::Game& engine::Game::getInstance(void)
+{
+	static Game instance;
+	return instance;
 }
 
 void engine::Game::sfmlInit(void)

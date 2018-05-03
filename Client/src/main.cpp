@@ -38,10 +38,8 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	static engine::Game EngineGame((uint16_t) 800, (uint16_t) 600);
-	engine::Network::getInstance("127.0.0.1", &EngineGame);
-
-	EngineGame.sfmlRender();
+	engine::Network::getInstance("127.0.0.1", &engine::Game::getInstance());
+	engine::Game::getInstance().sfmlRender();
 
 
 	return EXIT_SUCCESS;
