@@ -169,8 +169,6 @@ void engine::Map::constructMapRects(void)
 
 	while (row < maxRow)
 	{
-		if (row == maxRow)
-			bool a = true;
 		if (column >= maxColumn)
 		{
 			column = 0;
