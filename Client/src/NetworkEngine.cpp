@@ -26,7 +26,7 @@
 using namespace std;
 using asio::ip::udp;
 
-engine::Network::Network(const string address, engine::Game *GameEngine) : m_receiver_endpoint(asio::ip::address::from_string(address), PORT), m_socket(nullptr), m_thread_streamMainPlayerData(nullptr), m_thread_receiveLoop(nullptr), m_GameEngine(GameEngine)
+engine::Network::Network(const string address, engine::Game *GameEngine) : m_resolver(m_io_service), m_resolver_query(udp::v4(), address, to_string(PORT)), m_receiver_endpoint(*m_resolver.resolve(m_resolver_query)), m_socket(nullptr), m_thread_streamMainPlayerData(nullptr), m_thread_receiveLoop(nullptr), m_GameEngine(GameEngine)
 {
 	m_socket = new udp::socket(m_io_service);
 	m_socket->open(udp::v4());

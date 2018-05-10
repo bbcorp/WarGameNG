@@ -38,7 +38,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	engine::Network::getInstance("127.0.0.1", &engine::Game::getInstance());
+	engine::Network::getInstance("localhost", &engine::Game::getInstance());
 	engine::Game::getInstance().sfmlRender();
 	
 	return EXIT_SUCCESS;

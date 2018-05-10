@@ -36,8 +36,10 @@ namespace engine
 		void sendPlayerData(void);
 		void sendPlayerBullets(void);
 
-		asio::ip::udp::endpoint m_receiver_endpoint;
 		asio::io_service m_io_service;
+		asio::ip::udp::resolver m_resolver;
+		asio::ip::udp::resolver::query m_resolver_query;
+		asio::ip::udp::endpoint m_receiver_endpoint;
 		asio::ip::udp::socket *m_socket;
 		std::thread *m_thread_streamMainPlayerData;
 		std::thread *m_thread_receiveLoop;
