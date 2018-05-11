@@ -16,6 +16,7 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 
 #include "../include/NetworkEngine.h"
+#include "../include/AudioEngine.h"
 #include "../include/wargame_generated.h"
 #include "../include/ft_Delay.h"
 #include "../include/GuiLogger.h"
@@ -239,6 +240,7 @@ bool engine::Network::processplayerBaseBuffer(void)
 	/* if this is ourself and health has changed */
 	{
 		m_GameEngine->m_MainPlayer.m_health = o_tempPlayer.m_health;
+		engine::Audio::getInstance().gruntPlay();
 		return true;		
 	}
 	for (Player o_Player : m_GameEngine->m_MainPlayer.m_ennemiesPlayers)

@@ -18,18 +18,20 @@
 #include <stdlib.h>
 #include <iostream>
 #include <vector>
-#include "../include/GameEngine.h"
 #include "../include/NetworkEngine.h"
+#include "../include/AudioEngine.h"
 
 #ifdef _MSC_VER
 	#ifdef _DEBUG
-	#pragma comment(lib,"sfml-graphics-d.lib")
-	#pragma comment(lib,"sfml-window-d.lib")
-	#pragma comment(lib,"sfml-system-d.lib")
+		#pragma comment(lib,"sfml-graphics-d.lib")
+		#pragma comment(lib,"sfml-window-d.lib")
+		#pragma comment(lib,"sfml-system-d.lib")
+		#pragma comment(lib,"sfml-audio-d.lib")
 	#else
-	#pragma comment(lib,"sfml-graphics.lib")
-	#pragma comment(lib,"sfml-window.lib")
-	#pragma comment(lib,"sfml-system.lib")
+		#pragma comment(lib,"sfml-graphics.lib")
+		#pragma comment(lib,"sfml-window.lib")
+		#pragma comment(lib,"sfml-system.lib")
+		#pragma comment(lib,"sfml-audio.lib")
 	#endif // _DEBUG
 #endif // _MSC_VER
 

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\AudioEngine.cpp" />
     <ClCompile Include="src\Bullet.cpp" />
     <ClCompile Include="src\Event.cpp" />
     <ClCompile Include="src\ft_Delay.cpp" />
