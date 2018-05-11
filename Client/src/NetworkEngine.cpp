@@ -243,11 +243,11 @@ bool engine::Network::processplayerBaseBuffer(void)
 		engine::Audio::getInstance().gruntPlay();
 		return true;		
 	}
-	for (Player o_Player : m_GameEngine->m_MainPlayer.m_ennemiesPlayers)
+	for (vector<Player>::iterator o_Player = m_GameEngine->m_MainPlayer.m_ennemiesPlayers.begin(); o_Player != m_GameEngine->m_MainPlayer.m_ennemiesPlayers.end(); o_Player++)
 	{
-		if (o_tempPlayer.m_name == o_Player.m_name && o_tempPlayer.m_id == o_Player.m_id) // Player already exists
+		if (o_tempPlayer.m_name == o_Player->m_name && o_tempPlayer.m_id == o_Player->m_id) // Player already exists
 		{
-			if (o_Player == o_tempPlayer)
+			if (*o_Player == o_tempPlayer)
 			{
 				found = true;
 				break; // Data is the same, no need to store
@@ -255,8 +255,8 @@ bool engine::Network::processplayerBaseBuffer(void)
 			else
 			{
 				found = true;
-				o_Player.applyModificationFromNetwork(&o_tempPlayer); // Data has changed so store it !
-				o_Player.updateState();
+				o_Player->applyModificationFromNetwork(&o_tempPlayer); // Data has changed so store it !
+				o_Player->updateState();
 				break; // No need to go further we found it.
 			}
 		}
