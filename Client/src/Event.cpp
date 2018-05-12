@@ -51,59 +51,59 @@ void engine::Event::handleKeyboardGame(void)
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z) || sf::Keyboard::isKeyPressed(sf::Keyboard::Q) || sf::Keyboard::isKeyPressed(sf::Keyboard::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		m_MainPlayer->m_state = WALK;
+		m_MainPlayer->setState(WALK);
 		m_MainPlayer->updateState();
 	}
 	else
 	{
-		m_MainPlayer->m_state = IDLE;
+		m_MainPlayer->setState(IDLE);
 		m_MainPlayer->m_clockUpdate.restart();
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z) && sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
 	{
 		m_MainPlayer->move(-1, -1);
-		m_MainPlayer->m_orientation = UP_LEFT;
+		m_MainPlayer->setOrientation(UP_LEFT);
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z) && sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		m_MainPlayer->move(1, -1);
-		m_MainPlayer->m_orientation = UP_RIGHT;
+		m_MainPlayer->setOrientation(UP_RIGHT);
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
 	{
 		m_MainPlayer->move(0, -2);
-		m_MainPlayer->m_orientation = UP;
+		m_MainPlayer->setOrientation(UP);
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
 	{
 		m_MainPlayer->move(-1, 1);
-		m_MainPlayer->m_orientation = DOWN_LEFT;
+		m_MainPlayer->setOrientation(DOWN_LEFT);
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		m_MainPlayer->move(1, 1);
-		m_MainPlayer->m_orientation = DOWN_RIGHT;
+		m_MainPlayer->setOrientation(DOWN_RIGHT);
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
 		m_MainPlayer->move(0, 2);
-		m_MainPlayer->m_orientation = DOWN;
+		m_MainPlayer->setOrientation(DOWN);
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
 	{
 		m_MainPlayer->move(-2, 0);
-		m_MainPlayer->m_orientation = LEFT;
+		m_MainPlayer->setOrientation(LEFT);
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		m_MainPlayer->move(2, 0);
-		m_MainPlayer->m_orientation = RIGHT;
+		m_MainPlayer->setOrientation(RIGHT);
 	}
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && engine::ft_Delay(&engine::Bullet::m_clock, sf::milliseconds(350)))
 	{
-		m_MainPlayer->m_state = FIRE;
+		m_MainPlayer->setState(FIRE);
 		sf::Vector2i mousePos(sf::Mouse::getPosition(*m_window));
 		m_MainPlayer->fire(mousePos.x, mousePos.y);
 	}

@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <thread>
 
+#define PLAYER_MAX_HEALTH 100
+
 using namespace std;
 using asio::ip::udp;
 
@@ -122,7 +124,7 @@ bool engine::Network::requestIdTry(MainPlayer *o_MainPlayer, const uint16_t retr
 		for (uint16_t j = 0; j < 5; j++) // 1200 ms total
 		{
 			try {
-				if (o_MainPlayer->m_id != -1)
+				if (o_MainPlayer->getID() != -1)
 					return true;
 				else
 				{
@@ -136,7 +138,7 @@ bool engine::Network::requestIdTry(MainPlayer *o_MainPlayer, const uint16_t retr
 			}
 		}
 		try {
-			if (o_MainPlayer->m_id != -1)
+			if (o_MainPlayer->getID() != -1)
 				return true;
 			else
 			{
@@ -201,9 +203,9 @@ bool engine::Network::decodeFlatBuf(size_t receiveLength)
 	if (VerifyrequestIdBuffer(verifier))
 	{
 		auto requestIdAnswer = flatbuffers::GetRoot<requestId>(m_receive_buffer);
-		if (m_GameEngine->m_MainPlayer.m_id == -1)
+		if (m_GameEngine->m_MainPlayer.getID() == -1)
 		{
-			m_GameEngine->m_MainPlayer.m_id = requestIdAnswer->newId();
+			m_GameEngine->m_MainPlayer.setID(requestIdAnswer->newId());
 			m_GameEngine->m_MainPlayer.updatePosition(requestIdAnswer->newX(), requestIdAnswer->newY());
 		}
 	}
@@ -236,16 +238,15 @@ bool engine::Network::processplayerBaseBuffer(void)
 	bool found(false);
 	auto pBase = flatbuffers::GetRoot<playerBase>(m_receive_buffer);
 	Player o_tempPlayer(pBase);
-	if (o_tempPlayer.m_id == m_GameEngine->m_MainPlayer.m_id && o_tempPlayer.m_name == m_GameEngine->m_MainPlayer.m_name && o_tempPlayer.m_health != m_GameEngine->m_MainPlayer.m_health)
+	if (o_tempPlayer.getID() == m_GameEngine->m_MainPlayer.getID() && o_tempPlayer.m_name == m_GameEngine->m_MainPlayer.m_name && o_tempPlayer.getHealth() != m_GameEngine->m_MainPlayer.getHealth())
 	/* if this is ourself and health has changed */
 	{
-		m_GameEngine->m_MainPlayer.m_health = o_tempPlayer.m_health;
-		engine::Audio::getInstance().gruntPlay(m_GameEngine->m_MainPlayer.m_health);
+		m_GameEngine->m_MainPlayer.receiveDamage(o_tempPlayer.getHealth());
 		return true;		
 	}
 	for (vector<Player>::iterator o_Player = m_GameEngine->m_MainPlayer.m_ennemiesPlayers.begin(); o_Player != m_GameEngine->m_MainPlayer.m_ennemiesPlayers.end(); o_Player++)
 	{
-		if (o_tempPlayer.m_name == o_Player->m_name && o_tempPlayer.m_id == o_Player->m_id) // Player already exists
+		if (o_tempPlayer.m_name == o_Player->m_name && o_tempPlayer.getID() == o_Player->getID()) // Player already exists
 		{
 			if (*o_Player == o_tempPlayer)
 			{
@@ -297,7 +298,7 @@ bool engine::Network::processplayersBuffer(void)
 			Player o_tempPlayer(fbPlayers->vecPlayers()->Get(i));
 			for (j = 0; j < m_GameEngine->m_MainPlayer.m_ennemiesPlayers.size(); j++)
 			{
-				if (o_tempPlayer.m_name == m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j).m_name && o_tempPlayer.m_id == m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j).m_id) // Player already exists
+				if (o_tempPlayer.m_name == m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j).m_name && o_tempPlayer.getID() == m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j).getID()) // Player already exists
 				{
 					if (m_GameEngine->m_MainPlayer.m_ennemiesPlayers.at(j) == o_tempPlayer)
 					{

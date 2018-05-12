@@ -16,22 +16,23 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 
 #include "../include/PlayerBase.h"
+#include "../include/AudioEngine.h"
 #include <stdlib.h>
 #include <iostream>
 
 using namespace std;
 
 
-PlayerBase::PlayerBase() : m_id(-1), m_pos(0, 0), m_health((uint16_t)100), m_orientation((uint16_t)0), m_state((uint16_t)0), m_ammo((uint16_t)30)
+PlayerBase::PlayerBase() : m_pos(0, 0), m_id(-1), m_health((uint16_t)100), m_ammo((uint16_t)30), m_orientation((uint16_t)0), m_state((uint16_t)0)
 {
 
 }
 
-PlayerBase::PlayerBase(string name) : m_id(-1), m_name(name), m_pos(0, 0), m_health((uint16_t)100), m_orientation((uint16_t)0), m_state((uint16_t)0), m_ammo((uint16_t)30)
+PlayerBase::PlayerBase(string name) : m_name(name), m_pos(0, 0), m_id(-1), m_health((uint16_t)100), m_ammo((uint16_t)30), m_orientation((uint16_t)0), m_state((uint16_t)0)
 {
 
 }
-PlayerBase::PlayerBase(const WarGame::fb::playerBase *pBase) : m_id(pBase->id()), m_name(pBase->name()->data(), pBase->name()->size()), m_pos(pBase->pos()->x(), pBase->pos()->y()), m_health(pBase->health()), m_orientation(pBase->orientation()), m_state(pBase->state()), m_ammo(pBase->ammo())
+PlayerBase::PlayerBase(const WarGame::fb::playerBase *pBase) : m_name(pBase->name()->data(), pBase->name()->size()), m_pos(pBase->pos()->x(), pBase->pos()->y()), m_id(pBase->id()), m_health(pBase->health()), m_ammo(pBase->ammo()), m_orientation(pBase->orientation()), m_state(pBase->state())
 {
 
 }
@@ -58,12 +59,40 @@ bool PlayerBase::operator!=(PlayerBase const& Playerb)
 		|| m_pos != Playerb.m_pos;
 }
 
-void PlayerBase::receiveDamage(uint16_t damage)
+void PlayerBase::receiveDamage(const uint16_t newHealth)
 {
-	if (m_health > 0)
-		m_health -= damage;
-	cout << m_health << endl;
+	if (m_health > 0 && newHealth > 0)
+	{
+		m_health = newHealth;
+		engine::Audio::getInstance().gruntPlay(m_health);
+		cout << m_health << endl;
+	}
 }
+
+bool PlayerBase::setID(const int16_t newID)
+{
+	if (newID < -1)
+		return false;
+	m_id = newID;
+	return true;
+}
+
+bool PlayerBase::setOrientation(const uint16_t newOrientation)
+{
+	if (newOrientation < 0)
+		return false;
+	m_orientation = newOrientation;
+	return true;
+}
+
+bool PlayerBase::setState(const uint16_t newState)
+{
+	if (newState < 0)
+		return false;
+	m_state = newState;
+	return true;
+}
+
 using namespace WarGame::fb;
 
 string PlayerBase::encodeFlatBuf(void) const
@@ -85,6 +114,11 @@ string PlayerBase::requestId(void) const
 	std::string buffer((char *)builder.GetBufferPointer(), (char *)builder.GetBufferPointer() + builder.GetSize());
 	builder.ReleaseBufferPointer();
 	return buffer;
+}
+
+int16_t PlayerBase::getID(void) const
+{
+	return m_id;
 }
 
 uint16_t PlayerBase::getHealth(void) const
