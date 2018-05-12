@@ -40,6 +40,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+	engine::Audio::getInstance();
 	engine::Network::getInstance("localhost", &engine::Game::getInstance());
 	engine::Game::getInstance().sfmlRender();
 	

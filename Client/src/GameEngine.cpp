@@ -109,15 +109,20 @@ void engine::Game::sfmlRender(void)
 }
 void engine::Game::sfmlDisplaySprites(void)
 {
-	for (sf::Sprite *sprite : m_spriteQueue)
-		m_window->draw(*sprite);
+	/* /!\ FIX ME !! /!\ */
+	for (uint16_t i = 0; i < m_spriteQueue.size(); i++)
+		m_window->draw(*m_spriteQueue[i]);
+	/* /!\ FIX ME !! /!\ */
+
+	/*for (auto sprite : m_spriteQueue)
+		m_window->draw(*sprite);*/
 }
 
 bool engine::Game::deleteSpriteFromQueue(sf::Sprite *o_sprite)
 {
-	for (vector<sf::Sprite*>::iterator sprite = m_spriteQueue.begin(); sprite != m_spriteQueue.end(); sprite++)
+	for (vector<sf::Sprite*>::iterator sprite(m_spriteQueue.begin()); sprite != m_spriteQueue.end(); sprite++)
 	{
-		if (o_sprite == &**(sprite))
+		if (o_sprite == &**sprite)
 		{
 			m_spriteQueue.erase(sprite);
 			return true;

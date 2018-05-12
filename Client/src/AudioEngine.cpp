@@ -2,11 +2,31 @@
 
 using namespace std;
 
-engine::Audio::Audio() : m_gruntOffset(sf::seconds(0)), m_thread_grunt(nullptr)
+engine::Audio::Audio()
 {
-	if (!m_bufferGrunt.loadFromFile("../res/grunt.ogg"))
-		exit(EXIT_FAILURE);
-	m_soundGrunt.setBuffer(m_bufferGrunt);
+	sf::SoundBuffer *soundBuffer = nullptr;
+	sf::Sound *sound = nullptr;
+	for (uint16_t i = 1; i <= 5; i++)
+	{
+		if (soundBuffer != nullptr || sound != nullptr)
+			exit(EXIT_FAILURE);
+		soundBuffer = new sf::SoundBuffer;
+		if (!soundBuffer->loadFromFile("../res/audio/grunt/grunt0" + to_string(i) + ".ogg"))
+			exit(EXIT_FAILURE);
+		sf::Sound *sound = new sf::Sound(*soundBuffer);
+		m_soundsGrunt.push_back(sound);
+		sound = nullptr;
+		soundBuffer = nullptr;
+	}
+}
+
+engine::Audio::~Audio()
+{
+	for (sf::Sound *sound : m_soundsGrunt)
+	{
+		delete sound->getBuffer();
+		delete sound;
+	}
 }
 
 engine::Audio& engine::Audio::getInstance(void)
@@ -15,31 +35,8 @@ engine::Audio& engine::Audio::getInstance(void)
 	return instance;
 }
 
-bool engine::Audio::gruntPlay(void)
+void engine::Audio::gruntPlay(uint16_t health)
 {
-	if (m_gruntOffset > sf::seconds(0))
-		m_soundGrunt.setPlayingOffset(m_gruntOffset);
-	m_soundGrunt.play();
-	if (m_thread_grunt == nullptr)
-	{
-		m_thread_grunt = new thread(&engine::Audio::gruntLoop, this);
-		return true;
-	}
-	else
-		return false;
-
-}
-
-void engine::Audio::gruntLoop(void)
-{
-	while (m_soundGrunt.getPlayingOffset() < m_gruntOffset + sf::seconds(1))
-	{
-		this_thread::sleep_for(50ms);
-	}
-	m_soundGrunt.stop();
-	if (m_gruntOffset < sf::seconds(4))
-		m_gruntOffset += sf::seconds(1);
-	else
-		m_gruntOffset = sf::seconds(0);
-	m_thread_grunt = nullptr;
+	uint16_t i = (1 - (float(health) / 100)) * 4;
+	m_soundsGrunt[i]->play();
 }

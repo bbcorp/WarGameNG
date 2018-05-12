@@ -240,7 +240,7 @@ bool engine::Network::processplayerBaseBuffer(void)
 	/* if this is ourself and health has changed */
 	{
 		m_GameEngine->m_MainPlayer.m_health = o_tempPlayer.m_health;
-		engine::Audio::getInstance().gruntPlay();
+		engine::Audio::getInstance().gruntPlay(m_GameEngine->m_MainPlayer.m_health);
 		return true;		
 	}
 	for (vector<Player>::iterator o_Player = m_GameEngine->m_MainPlayer.m_ennemiesPlayers.begin(); o_Player != m_GameEngine->m_MainPlayer.m_ennemiesPlayers.end(); o_Player++)

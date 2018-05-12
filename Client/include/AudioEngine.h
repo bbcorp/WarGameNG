@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <string>
 #include <thread>
+#include <vector>
 #include <SFML/Audio.hpp>
 #include <SFML/System/Time.hpp>
 
@@ -14,17 +15,13 @@ namespace engine
 		Audio(Audio const&) = delete;
 		void operator=(Audio const&) = delete;
 		static Audio& getInstance(void);
-		bool gruntPlay(void);
+		void gruntPlay(uint16_t health);
 
 	private:
 		Audio();
+		~Audio();
 
-		void gruntLoop(void);
-
-		sf::SoundBuffer m_bufferGrunt;
-		sf::Sound m_soundGrunt;
-		sf::Time m_gruntOffset;
-		std::thread *m_thread_grunt;
+		std::vector<sf::Sound*> m_soundsGrunt;
 	};
 }
 #endif
