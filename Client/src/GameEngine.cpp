@@ -114,8 +114,8 @@ void engine::Game::sfmlDisplaySprites(void)
 		m_window->draw(*m_spriteQueue[i]);
 	/* /!\ FIX ME !! /!\ */
 
-	/*for (auto sprite : m_spriteQueue)
-		m_window->draw(*sprite);*/
+	/*for (vector<sf::Sprite*>::iterator sprite(m_spriteQueue.begin()); sprite != m_spriteQueue.end(); sprite++)
+		m_window->draw(**sprite);*/
 }
 
 bool engine::Game::deleteSpriteFromQueue(sf::Sprite *o_sprite)
